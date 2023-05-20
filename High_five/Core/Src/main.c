@@ -56,7 +56,7 @@ TIM_HandleTypeDef htim3;
 PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN PV */
-
+uint8_t *led_register = ((uint8_t*)&(GPIOE->ODR)) + 1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -87,16 +87,6 @@ void initialise_board() {
 	uint16_t *led_output_registers = ((uint16_t *)&(GPIOE->MODER)) + 1;
 	*led_output_registers = 0x5555;
 }
-
-
-typedef union {
-	uint8_t all_leds;
-	struct {
-		uint8_t led_pair_1 : 2;
-		uint8_t led_pair_2 : 2;
-		uint8_t led_set_of_4 : 4;
-	} led_groups;
-} LedRegister;
 
 
 
@@ -159,7 +149,6 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
     }
 }
 
-
 TIM_HandleTypeDef htim; // Declare your timer handle
 uint32_t pwmCaptureValue; // Variable to store the captured PWM value
 
@@ -168,6 +157,8 @@ void readPWMInputCapture()
 {
     pwmCaptureValue = HAL_TIM_ReadCapturedValue(&htim, TIM_CHANNEL_1); // Replace X with the appropriate channel number
 }
+
+
 
 /* USER CODE END 0 */
 
@@ -184,7 +175,6 @@ int main(void)
 	enable_clocks();
 	initialise_board();
 
-	LedRegister *led_register = ((uint8_t*)&(GPIOE->ODR)) + 1;
 
 	SerialInitialise(BAUD_115200, &USART1_PORT, 0x00);
 
@@ -287,7 +277,7 @@ int main(void)
 //		movement(v, 120, 120);
 //		HAL_Delay(1500);
 //
-		movement(v, 90, 90);
+		movement(v, 96, 98);
 		HAL_Delay(500);
 
 		uint8_t xMSB = 0x00;
@@ -308,15 +298,15 @@ int main(void)
 		HAL_I2C_Mem_Read(&hi2c1,gyro_rd, 0x2C, 1, &zLSB, 1, 10);
 		int16_t roll_rate = ((zMSB << 8) | zLSB);
 
-		if (pitch_rate < 0)
-			led_register->led_groups.led_pair_1 = 0b01;
-		else
-			led_register->led_groups.led_pair_1 = 0b10;
-
-		if (yaw_rate < 0)
-			led_register->led_groups.led_pair_2 = 1;
-		else
-			led_register->led_groups.led_pair_2 = 2;
+//		if (pitch_rate < 0)
+//			led_register->led_groups.led_pair_1 = 0b01;
+//		else
+//			led_register->led_groups.led_pair_1 = 0b10;
+//
+//		if (yaw_rate < 0)
+//			led_register->led_groups.led_pair_2 = 1;
+//		else
+//			led_register->led_groups.led_pair_2 = 2;
 
 
 		uint8_t lidar_value = 0x03;
@@ -358,7 +348,7 @@ int main(void)
 
 		uint8_t led_values = pow(2, lidar_ranges);
 
-		led_register->led_groups.led_set_of_4 = led_values;
+//		led_register->led_groups.led_set_of_4 = led_values;
 
 		volatile int read_values_now = 0;
 
@@ -368,17 +358,32 @@ int main(void)
 			lidar_distance = 5500;
 
 		const uint32_t time = __HAL_TIM_GET_COUNTER(&htim3);
-		while (last_period >= 50 && last_period <= 200)
+		int x = 0;
+
+		while (last_period >= 5 && last_period <= 250)
 		{
 			uint32_t delayCounts = 3000; // Assuming timer counts at 1 kHz
 			uint32_t targetCount = time + delayCounts;
 			if (targetCount > 3000)
 			{
-				targetCount = targetCount - 3000;
+				targetCount = targetCount - 3000.5;
 			}
+
+			int LED_time = time + 375*x;
+			if (LED_time > 3000)
+			{
+				LED_time = LED_time - 3000.5;
+			}
+			if (__HAL_TIM_GET_COUNTER(&htim3) == LED_time)
+			{
+				*led_register |= (0b00000001 << x);   // Set the bit corresponding to LED x
+				x++;
+			}
+
 
 			sprintf(string_to_send,"%u,%u\r\n", __HAL_TIM_GET_COUNTER(&htim3),targetCount);
 			SerialOutputString(string_to_send, &USART1_PORT);
+
 		    if(__HAL_TIM_GET_COUNTER(&htim3) != targetCount)
 		    {
 		        // Your code here, or do nothing
@@ -389,12 +394,16 @@ int main(void)
 				{
 					// Your code here, or do nothing
 					movement(v, 120, 55);
+					*led_register = 0;
 					HAL_Delay(500);
 
 				}
 		    }
-		}
+//		    *led_register = 0;
+//		    led_register->led_groups.led_pair_1 = 0b10;
 
+		}
+		*led_register = 0;
 		sprintf(string_to_send, "%u,%u,%u,%hd,%hd,%hd\r\n", last_period, lidar_distance, lidar_ranges,roll_rate, pitch_rate, yaw_rate);
 
 		SerialOutputString(string_to_send, &USART1_PORT);
