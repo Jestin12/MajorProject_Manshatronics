@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Sensor_readings/movement.ioc&apos; to &apos;Sensor_readings.ioc&apos;" description="Rename resource &apos;movement.ioc&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="movement.ioc" name="Sensor_readings.ioc" stamp="1684037175466" updateReferences="true"/>
+</session>

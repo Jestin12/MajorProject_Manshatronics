@@ -1,0 +1,10 @@
+18:36:39 **** Incremental Build of configuration Debug for project High_five ****
+make -j9 all 
+arm-none-eabi-size   High_five.elf 
+   text	   data	    bss	    dec	    hex	filename
+  33524	    176	   2768	  36468	   8e74	High_five.elf
+Finished building: default.size.stdout
+ 
+
+18:36:40 Build Finished. 0 errors, 0 warnings. (took 708ms)
+

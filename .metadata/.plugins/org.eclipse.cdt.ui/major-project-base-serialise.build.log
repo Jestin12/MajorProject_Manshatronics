@@ -1,0 +1,58 @@
+14:35:22 **** Incremental Build of configuration Debug for project major-project-base-serialise ****
+make -j9 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F303xC -c -I../Core/Inc -I../Drivers/STM32F3xx_HAL_Driver/Inc -I../Drivers/STM32F3xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F3xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'HAL_TIM_IC_CaptureCallback':
+../Core/Src/main.c:110:10: warning: unused variable 'buffer' [-Wunused-variable]
+  110 |  uint8_t buffer[32];
+      |          ^~~~~~
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:169:30: warning: initialization of 'LedRegister *' from incompatible pointer type 'uint8_t *' {aka 'unsigned char *'} [-Wincompatible-pointer-types]
+  169 |  LedRegister *led_register = ((uint8_t*)&(GPIOE->ODR)) + 1;
+      |                              ^
+../Core/Src/main.c:365:55: warning: pointer targets in passing argument 1 of 'SerialInputPacketHeader' differ in signedness [-Wpointer-sign]
+  365 |   uint16_t data_packet_size = SerialInputPacketHeader(data_packet_input_buffer, &USART1_PORT);
+      |                                                       ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                       |
+      |                                                       uint8_t * {aka unsigned char *}
+In file included from ../Core/Src/main.c:27:
+../Core/Inc/serial.h:50:40: note: expected 'char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+   50 | uint16_t SerialInputPacketHeader(char *buffer, SerialPort *serial_port);
+      |                                  ~~~~~~^~~~~~
+../Core/Src/main.c:373:44: warning: passing argument 1 of 'SerialInputDataPacket' from incompatible pointer type [-Wincompatible-pointer-types]
+  373 |    uint8_t success = SerialInputDataPacket(&desired_led_state, sizeof(desired_led_state), &USART1_PORT);
+      |                                            ^~~~~~~~~~~~~~~~~~
+      |                                            |
+      |                                            LEDState *
+In file included from ../Core/Src/main.c:27:
+../Core/Inc/serial.h:51:38: note: expected 'char *' but argument is of type 'LEDState *'
+   51 | uint16_t SerialInputDataPacket(char *buffer, int length, SerialPort *serial_port);
+      |                                ~~~~~~^~~~~~
+../Core/Src/main.c:365:12: warning: unused variable 'data_packet_size' [-Wunused-variable]
+  365 |   uint16_t data_packet_size = SerialInputPacketHeader(data_packet_input_buffer, &USART1_PORT);
+      |            ^~~~~~~~~~~~~~~~
+../Core/Src/main.c:173:20: warning: variable 'return_value' set but not used [-Wunused-but-set-variable]
+  173 |  HAL_StatusTypeDef return_value = 0x00;
+      |                    ^~~~~~~~~~~~
+../Core/Src/main.c:164:10: warning: unused variable 'string_to_send' [-Wunused-variable]
+  164 |  uint8_t string_to_send[64] = "This is a string !\r\n";
+      |          ^~~~~~~~~~~~~~
+../Core/Src/main.c:161:10: warning: unused variable 'size_2' [-Wunused-variable]
+  161 |  uint8_t size_2 = sizeof(struct_2);
+      |          ^~~~~~
+../Core/Src/main.c:160:10: warning: unused variable 'size_1' [-Wunused-variable]
+  160 |  uint8_t size_1 = sizeof(struct_1);
+      |          ^~~~~~
+arm-none-eabi-gcc -o "major-project-base-serialise.elf" @"objects.list"   -mcpu=cortex-m4 -T"/Users/neelbagayatkar/Documents/MTRX2700-2023/major-project-base-serialise/STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="major-project-base-serialise.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: major-project-base-serialise.elf
+ 
+arm-none-eabi-size   major-project-base-serialise.elf 
+arm-none-eabi-objdump -h -S  major-project-base-serialise.elf  > "major-project-base-serialise.list"
+   text	   data	    bss	    dec	    hex	filename
+  24020	     84	   2660	  26764	   688c	major-project-base-serialise.elf
+Finished building: default.size.stdout
+ 
+Finished building: major-project-base-serialise.list
+ 
+
+14:35:23 Build Finished. 0 errors, 9 warnings. (took 779ms)
+

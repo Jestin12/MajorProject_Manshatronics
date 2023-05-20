@@ -1,0 +1,20 @@
+18:36:20 **** Build of configuration Debug for project High_five ****
+make -j9 all 
+arm-none-eabi-gcc -o "High_five.elf" @"objects.list"   -mcpu=cortex-m4 -T"/Users/neelbagayatkar/Documents/Project/MajorProject_Manshatronics/High_five/STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="High_five.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: High_five.elf
+ 
+arm-none-eabi-size   High_five.elf 
+arm-none-eabi-objdump -h -S  High_five.elf  > "High_five.list"
+   text	   data	    bss	    dec	    hex	filename
+  33524	    176	   2768	  36468	   8e74	High_five.elf
+Finished building: default.size.stdout
+ 
+Finished building: High_five.list
+ 
+18:36:39 **** Incremental Build of configuration Debug for project High_five ****
+make -j9 all 
+arm-none-eabi-size   High_five.elf 
+   text	   data	    bss	    dec	    hex	filename
+  33524	    176	   2768	  36468	   8e74	High_five.elf
+Finished building: default.size.stdout
+ 
