@@ -11,11 +11,11 @@ At the completion of each level, the LED wheel will display certain LEDs of diff
 ## Group Contributions
 Neel – High five (main), (assist) CAT-Scan and LiDar lock (back-up puzzle) 
 
-Jestin – Simon says (main), (assist) servo movement function in high five 
+Jestin – Simon says (main), RemoteServo (main), (assist) servo movement function in high five 
 
 Josh - Connect the wires  
 
-Mansh – Combination lock 
+Mansh – Combination lock (main), RemoteServo (assist)  
 
 Zach – CAT Scan (main) 
 
