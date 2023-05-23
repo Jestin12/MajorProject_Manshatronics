@@ -24,7 +24,8 @@
 #define CTRL_REG1_M 0x20
 #define CTRL_REG2_M 0x21
 #define CTRL_REG3_M 0x22
-
+#define CFG_REG_A_M 0x60
+#define CFG_REG_C_M 0x62
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -124,9 +125,9 @@ int main(void)
 		returnValue = HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, 0x60, 1, &regValue, 1, 10);
 
 	}
-	HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, CTRL_REG1_M, I2C_MEMADD_SIZE_8BIT, &regVal, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, CTRL_REG2_M, I2C_MEMADD_SIZE_8BIT, &regValue, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, CTRL_REG3_M, I2C_MEMADD_SIZE_8BIT, &regValue, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, CFG_REG_A_M, I2C_MEMADD_SIZE_8BIT, &regVal, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, CFG_REG_C_M, I2C_MEMADD_SIZE_8BIT, 0x01, 1, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, CTRL_REG1_M, I2C_MEMADD_SIZE_8BIT, 0x57, 1, HAL_MAX_DELAY);
 
 
   /* USER CODE END 2 */
