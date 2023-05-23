@@ -75,7 +75,7 @@ The combination lock is a puzzle designed to act like an ordinary combination lo
   - This file would contain functions that would allow for the raw magnetometer data to be converted to heading data.
   - This would be done by first finding the magnitude of all the magnetic field, by using sqrt(x^2+y^2+z^2). Then, the x,y and z values will be normalised by dividing them 
     by the magnitude. Finally, the true heading can be found by the finding the inverse tan of x/y.
-- combination.c
+- combination.c (proposed)
   - This file contains code necessary for checking the current angle of the discovery board, and deciphering what number that angle corresponds to.
   - If the user rotates the discovery board the correct amount, the board will flash green. If the user does this incorrectly, the board will flash red, and the user will       need to restart the combination lock from the beginning
   - The user will need to turn to a range of different values acquired throughout the rest of the game, which will be indicated by the numbers on the mold
