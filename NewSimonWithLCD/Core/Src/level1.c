@@ -7,6 +7,7 @@
 #include "stm32f3xx_hal.h"
 #include "main.h"
 #include "user_functions2.h"
+#include "lcd.h"
 
 int level1()
 {

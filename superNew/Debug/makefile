@@ -60,8 +60,8 @@ all: main-build
 main-build: superNew.elf secondary-outputs
 
 # Tool invocations
-superNew.elf superNew.map: $(OBJS) $(USER_OBJS) C:\Users\mansh\STM32CubeIDE\workspace_1.12.1\superNew\STM32F303VCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "superNew.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\mansh\STM32CubeIDE\workspace_1.12.1\superNew\STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="superNew.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+superNew.elf superNew.map: $(OBJS) $(USER_OBJS) C:\Users\jesti\OneDrive\Documents\USYD\2023_S1C_MTRX2700\Major\ Project\Manshatronics\MajorProject_Manshatronics\superNew\STM32F303VCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "superNew.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\jesti\OneDrive\Documents\USYD\2023_S1C_MTRX2700\Major Project\Manshatronics\MajorProject_Manshatronics\superNew\STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="superNew.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
