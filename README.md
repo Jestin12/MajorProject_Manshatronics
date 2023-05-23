@@ -68,4 +68,15 @@ At the completion of each level, the LED wheel will display certain LEDs of diff
 
 ### **Combination Lock** 
 The combination lock is a puzzle designed to act like an ordinary combination lock, but using the magnetometer of the discovery board instead of an actual physical mechanism. The combination lock would use the magnetometer to find the relative heading of the discovery board, from 0 to 360. In a typical combination lock, different numbers are placed at different angles, and so the discovery board could be placed in a mold so that it can only rotate in place, with the mold having numbers around the edge just as a typical combination lock would. Each number will correspond to a different angle, which can be implemented in the code. The player of the escape room would then need to discover the combination for the lock through the other puzzles, and then input those by spinning the discovery board in a specific way.
-
+**Files Overview**
+- main.c
+  - This file consists of HAL functions to extract raw data from the magnetometer, with all the appropriate register address and the correct startup sequence.
+- heading.c (proposed)
+  - This file would contain functions that would allow for the raw magnetometer data to be converted to heading data.
+  - This would be done by first finding the magnitude of all the magnetic field, by using sqrt(x^2+y^2+z^2). Then, the x,y and z values will be normalised by dividing them 
+    by the magnitude. Finally, the true heading can be found by the finding the inverse tan of x/y.
+- combination.c
+  - This file contains code necessary for checking the current angle of the discovery board, and deciphering what number that angle corresponds to.
+  - If the user rotates the discovery board the correct amount, the board will flash green. If the user does this incorrectly, the board will flash red, and the user will       need to restart the combination lock from the beginning
+  - The user will need to turn to a range of different values acquired throughout the rest of the game, which will be indicated by the numbers on the mold
+  - A timer will also be implemented, giving the user a short time period to rotate the board to each value, and if this timeframe is exceeded, the challenge will restart
