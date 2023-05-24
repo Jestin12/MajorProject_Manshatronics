@@ -97,6 +97,28 @@ void initialise_board() {
 	uint16_t *led_output_registers = ((uint16_t *)&(GPIOE->MODER)) + 1;
 	*led_output_registers = 0x5555;
 }
+void read_magnetometer(uint16_t* magX, uint16_t* magY, uint16_t* magZ )
+{
+	  uint8_t xMSB = 0x00;
+	  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTX_H_REG_M, 1, &xMSB, 1, 10);
+	  uint8_t xLSB = 0x00;
+	  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTX_L_REG_M, 1, &xLSB, 1, 10);
+	  *magX = ((xMSB << 8) | xLSB);
+
+	  uint8_t yMSB = 0x00;
+	  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTY_H_REG_M, 1, &yMSB, 1, 10);
+	  uint8_t yLSB = 0x00;
+	  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTY_L_REG_M, 1, &yLSB, 1, 10);
+	  *magY = ((yMSB << 8) | yLSB);
+
+	  uint8_t zMSB = 0x00;
+	  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTZ_H_REG_M, 1, &zMSB, 1, 10);
+	  uint8_t zLSB = 0x00;
+	  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTZ_L_REG_M, 1, &zLSB, 1, 10);
+	  *magZ = ((zMSB << 8) | zLSB);
+
+
+}
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -138,7 +160,7 @@ int main(void)
 
 	  // Wait for the magnetometer to be ready
 	  HAL_Delay(100);
-
+a
 	  // Set the magnetometer to continuous measurement mode
 	  regValue = 0x01;
 	  HAL_I2C_Mem_Write(&hi2c1, MAG_WRITE, CFG_REG_C_M, 1, &regValue, 1, 10);
@@ -156,25 +178,12 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
-		  uint8_t xMSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTX_H_REG_M, 1, &xMSB, 1, 10);
-		  uint8_t xLSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTX_L_REG_M, 1, &xLSB, 1, 10);
-		  uint16_t magX = ((xMSB << 8) | xLSB);
+    /* USER CODE BEGIN 3      */
 
-		  uint8_t yMSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTY_H_REG_M, 1, &yMSB, 1, 10);
-		  uint8_t yLSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTY_L_REG_M, 1, &yLSB, 1, 10);
-		  uint16_t magY = ((yMSB << 8) | yLSB);
-
-		  uint8_t zMSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTZ_H_REG_M, 1, &zMSB, 1, 10);
-		  uint8_t zLSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTZ_L_REG_M, 1, &zLSB, 1, 10);
-		  uint16_t magZ = ((zMSB << 8) | zLSB);
-
+	  	  uint16_t magX;
+		  uint16_t magY;
+		  uint16_t magZ;
+	  	  read_magnetometer(&magX, &magY, &magZ);
 		  uint16_t strength = atan2(magY,magX)*180/3.14159265358979323846; //Extracting the strength of the magnets from the X and Y values
 		  sprintf(buffer,"Strength = %d\r\n",strength );
 		  HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
