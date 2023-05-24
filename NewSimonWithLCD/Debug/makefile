@@ -34,34 +34,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := NewSimon
+BUILD_ARTIFACT_NAME := NewSimonWithLCD
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-NewSimon.elf \
+NewSimonWithLCD.elf \
 
 MAP_FILES += \
-NewSimon.map \
+NewSimonWithLCD.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-NewSimon.list \
+NewSimonWithLCD.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: NewSimon.elf secondary-outputs
+main-build: NewSimonWithLCD.elf secondary-outputs
 
 # Tool invocations
-NewSimon.elf NewSimon.map: $(OBJS) $(USER_OBJS) C:\Users\jesti\OneDrive\Documents\USYD\2023_S1C_MTRX2700\Major\ Project\NewSimon\STM32F303VCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "NewSimon.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\jesti\OneDrive\Documents\USYD\2023_S1C_MTRX2700\Major Project\NewSimon\STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="NewSimon.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+NewSimonWithLCD.elf NewSimonWithLCD.map: $(OBJS) $(USER_OBJS) C:\Users\jesti\OneDrive\Documents\USYD\2023_S1C_MTRX2700\Major\ Project\Manshatronics\MajorProject_Manshatronics\NewSimonWithLCD\STM32F303VCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "NewSimonWithLCD.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\jesti\OneDrive\Documents\USYD\2023_S1C_MTRX2700\Major Project\Manshatronics\MajorProject_Manshatronics\NewSimonWithLCD\STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="NewSimonWithLCD.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -70,14 +70,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-NewSimon.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "NewSimon.list"
+NewSimonWithLCD.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "NewSimonWithLCD.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) NewSimon.elf NewSimon.list NewSimon.map default.size.stdout
+	-$(RM) NewSimonWithLCD.elf NewSimonWithLCD.list NewSimonWithLCD.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

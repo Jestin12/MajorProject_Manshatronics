@@ -39,6 +39,8 @@ extern "C" {
 extern uint8_t *led_register;
 
 extern uint8_t Wnum;
+
+
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

@@ -1,0 +1,17 @@
+main.c:85:6:enable_clocks	1
+main.c:91:6:initialise_board	1
+main.c:109:6:HAL_TIM_IC_CaptureCallback	4
+main.c:129:6:movement	3
+main.c:149:6:HAL_TIM_OC_DelayElapsedCallback	3
+main.c:162:6:readPWMInputCapture	1
+main.c:175:5:main	10
+main.c:434:6:SystemClock_Config	4
+main.c:485:13:MX_I2C1_Init	4
+main.c:533:13:MX_SPI1_Init	2
+main.c:573:13:MX_TIM1_Init	6
+main.c:633:13:MX_TIM2_Init	5
+main.c:686:13:MX_TIM3_Init	6
+main.c:745:13:MX_TIM15_Init	7
+main.c:821:13:MX_USB_PCD_Init	2
+main.c:852:13:MX_GPIO_Init	1
+main.c:903:6:Error_Handler	1

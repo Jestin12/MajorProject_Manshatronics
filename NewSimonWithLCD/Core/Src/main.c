@@ -115,6 +115,8 @@ int main(void)
 
 	Lcd_cursor(&lcd, 0,1);
 	Lcd_string(&lcd, "Simon Says");
+	Lcd_cursor(&lcd, 1,1);
+	Lcd_string(&lcd, "Starting");
 	HAL_Delay(1000);
 
 	int x;
@@ -171,6 +173,9 @@ int main(void)
 		Lcd_string(&lcd, "Press B1 2 Begin");
 		*led_register = 0b00110011;	//indicates that your on the second level
 		while (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) != 1){}
+		Lcd_cursor(&lcd, 1,1);
+		Lcd_string(&lcd, "Match pattern    ");
+
 		x = level2();
 
 		if (x == 1){}

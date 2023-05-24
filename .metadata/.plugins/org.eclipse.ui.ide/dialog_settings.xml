@@ -7,6 +7,12 @@
 		<item key="WizardProjectsImportPage.STORE_CLOSE_CREATED_PROJECTS_ID" value="false"/>
 		<item key="WizardProjectsImportPage.STORE_HIDE_CONFLICTING_PROJECTS_ID" value="false"/>
 		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="/Users/neelbagayatkar/Documents/MTRX2700_Backup/LiDar_Lock copy 2"/>
+			<item value="/Users/neelbagayatkar/Documents/MTRX2700_Backup/LiDar_Lock copy"/>
+			<item value="/Users/neelbagayatkar/Documents/MTRX2700_Backup/LiDar_Lock"/>
+			<item value="/Users/neelbagayatkar/Documents/Project/MajorProject_Manshatronics/High_five"/>
+			<item value="/Users/neelbagayatkar/Documents/MTRX2700_Backup/LiDar_lock"/>
+			<item value="/Users/neelbagayatkar/Documents/MTRX2700_Backup/LiDar_Lock_backup"/>
 			<item value="/Users/neelbagayatkar/Documents/Project/MajorProject_Manshatronics/movement"/>
 		</list>
 		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
@@ -19,6 +25,11 @@
 		<item key="SmartImportRootWizardPage.STORE_NESTED_PROJECTS" value="true"/>
 		<item key="SmartImportRootWizardPage.STORE_CONFIGURE_NATURES" value="true"/>
 		<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+			<item value="/Users/neelbagayatkar/Documents/MTRX2700_Backup/LiDar_Lock_backup"/>
+			<item value="/Users/neelbagayatkar/Documents/Project/MajorProject_Manshatronics/High_five"/>
+			<item value="/Users/neelbagayatkar/Documents/MTRX2700_Backup/major-project-base_backup"/>
+			<item value="/Users/neelbagayatkar/Documents/MTRX2700_Backup"/>
+			<item value="/Users/neelbagayatkar/Documents/MTRX2700_Backup/High_five_backup"/>
 			<item value="/Users/neelbagayatkar/Documents/MTRX2700-2023"/>
 			<item value="/Users/neelbagayatkar/Documents/Project/MajorProject_Manshatronics"/>
 		</list>

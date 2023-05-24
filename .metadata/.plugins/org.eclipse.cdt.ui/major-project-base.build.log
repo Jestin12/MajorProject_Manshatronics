@@ -1,10 +1,85 @@
-18:20:27 **** Incremental Build of configuration Debug for project major-project-base ****
+22:13:40 **** Incremental Build of configuration Debug for project major-project-base ****
 make -j9 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F303xC -c -I../Core/Inc -I../Drivers/STM32F3xx_HAL_Driver/Inc -I../Drivers/STM32F3xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F3xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'HAL_TIM_IC_CaptureCallback':
+../Core/Src/main.c:105:10: warning: unused variable 'buffer' [-Wunused-variable]
+  105 |  uint8_t buffer[32];
+      |          ^~~~~~
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:387:4: warning: implicit declaration of function 'sprintf' [-Wimplicit-function-declaration]
+  387 |    sprintf(string_to_send,"%u,%u\r\n", __HAL_TIM_GET_COUNTER(&htim3),targetCount);
+      |    ^~~~~~~
+../Core/Src/main.c:387:4: warning: incompatible implicit declaration of built-in function 'sprintf'
+../Core/Src/main.c:30:1: note: include '<stdio.h>' or provide a declaration of 'sprintf'
+   29 | #include "math.h"
+  +++ |+#include <stdio.h>
+   30 | 
+../Core/Src/main.c:387:12: warning: pointer targets in passing argument 1 of 'sprintf' differ in signedness [-Wpointer-sign]
+  387 |    sprintf(string_to_send,"%u,%u\r\n", __HAL_TIM_GET_COUNTER(&htim3),targetCount);
+      |            ^~~~~~~~~~~~~~
+      |            |
+      |            uint8_t * {aka unsigned char *}
+../Core/Src/main.c:387:12: note: expected 'char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+../Core/Src/main.c:387:29: warning: format '%u' expects argument of type 'unsigned int', but argument 3 has type 'uint32_t' {aka 'volatile long unsigned int'} [-Wformat=]
+  387 |    sprintf(string_to_send,"%u,%u\r\n", __HAL_TIM_GET_COUNTER(&htim3),targetCount);
+      |                            ~^
+      |                             |
+      |                             unsigned int
+      |                            %lu
+../Core/Src/main.c:387:32: warning: format '%u' expects argument of type 'unsigned int', but argument 4 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  387 |    sprintf(string_to_send,"%u,%u\r\n", __HAL_TIM_GET_COUNTER(&htim3),targetCount);
+      |                               ~^                                     ~~~~~~~~~~~
+      |                                |                                     |
+      |                                unsigned int                          uint32_t {aka long unsigned int}
+      |                               %lu
+../Core/Src/main.c:412:3: warning: incompatible implicit declaration of built-in function 'sprintf'
+  412 |   sprintf(string_to_send, "%u,%u,%u,%hd,%hd,%hd\r\n", last_period, lidar_distance, lidar_ranges,roll_rate, pitch_rate, yaw_rate);
+      |   ^~~~~~~
+../Core/Src/main.c:412:3: note: include '<stdio.h>' or provide a declaration of 'sprintf'
+../Core/Src/main.c:412:11: warning: pointer targets in passing argument 1 of 'sprintf' differ in signedness [-Wpointer-sign]
+  412 |   sprintf(string_to_send, "%u,%u,%u,%hd,%hd,%hd\r\n", last_period, lidar_distance, lidar_ranges,roll_rate, pitch_rate, yaw_rate);
+      |           ^~~~~~~~~~~~~~
+      |           |
+      |           uint8_t * {aka unsigned char *}
+../Core/Src/main.c:412:11: note: expected 'char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+../Core/Src/main.c:356:16: warning: unused variable 'read_values_now' [-Wunused-variable]
+  356 |   volatile int read_values_now = 0;
+      |                ^~~~~~~~~~~~~~~
+../Core/Src/main.c:352:11: warning: unused variable 'led_values' [-Wunused-variable]
+  352 |   uint8_t led_values = pow(2, lidar_ranges);
+      |           ^~~~~~~~~~
+../Core/Src/main.c:322:12: warning: unused variable 'timeout' [-Wunused-variable]
+  322 |   uint16_t timeout;
+      |            ^~~~~~~
+../Core/Src/main.c:318:11: warning: unused variable 'lidar_LSBa' [-Wunused-variable]
+  318 |   uint8_t lidar_LSBa = 0x00;
+      |           ^~~~~~~~~~
+../Core/Src/main.c:317:11: warning: unused variable 'lidar_MSBa' [-Wunused-variable]
+  317 |   uint8_t lidar_MSBa = 0x00;
+      |           ^~~~~~~~~~
+../Core/Src/main.c:243:10: warning: unused variable 'PWM_direction_clockwise' [-Wunused-variable]
+  243 |  uint8_t PWM_direction_clockwise = 1;
+      |          ^~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:184:20: warning: unused variable 'horizontal_PWM' [-Wunused-variable]
+  184 |  volatile uint16_t horizontal_PWM = 1000;
+      |                    ^~~~~~~~~~~~~~
+../Core/Src/main.c:183:20: warning: unused variable 'vertical_PWM' [-Wunused-variable]
+  183 |  volatile uint16_t vertical_PWM = 1000;
+      |                    ^~~~~~~~~~~~
+../Core/Src/main.c:181:20: warning: variable 'return_value' set but not used [-Wunused-but-set-variable]
+  181 |  HAL_StatusTypeDef return_value = 0x00;
+      |                    ^~~~~~~~~~~~
+arm-none-eabi-gcc -o "major-project-base.elf" @"objects.list"   -mcpu=cortex-m4 -T"/Users/neelbagayatkar/Documents/MTRX2700_Backup/LiDar_Lock/STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="major-project-base.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: major-project-base.elf
+ 
 arm-none-eabi-size   major-project-base.elf 
+arm-none-eabi-objdump -h -S  major-project-base.elf  > "major-project-base.list"
    text	   data	    bss	    dec	    hex	filename
-  33524	    176	   2768	  36468	   8e74	major-project-base.elf
+  33708	    180	   2772	  36660	   8f34	major-project-base.elf
 Finished building: default.size.stdout
  
+Finished building: major-project-base.list
+ 
 
-18:20:28 Build Finished. 0 errors, 0 warnings. (took 672ms)
+22:13:41 Build Finished. 0 errors, 17 warnings. (took 933ms)
 

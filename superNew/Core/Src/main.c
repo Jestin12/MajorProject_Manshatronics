@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "math.h"
 #define MAG_READ 0x3D
 #define MAG_WRITE 0x3C
 #define MAX_CHAR 300
@@ -27,7 +28,12 @@
 #define CFG_REG_A_M 0x60
 #define CFG_REG_C_M 0x62
 #define LSM303AGR_ADDRESS 0x1E
-
+#define OUTX_H_REG_M 0x69
+#define OUTX_L_REG_M 0x68
+#define OUTY_L_REG_M 0x6A
+#define OUTY_H_REG_M 0x6B
+#define OUTZ_L_REG_M 0x6C
+#define OUTZ_H_REG_M 0x6D
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -83,29 +89,14 @@ static void MX_USART1_UART_Init(void);
   * @brief  The application entry point.
   * @retval int
   */
-void read_magnetometer(void) {
-  // Read the magnetometer data from the LSM303AGR.
-  uint8_t data[6] = {0};
-
-  // Send the read command to the LSM303AGR.
-  HAL_I2C_Mem_Write(&hi2c1, LSM303AGR_ADDRESS, 0x00, I2C_MEMADD_SIZE_8BIT, data, 6, HAL_MAX_DELAY);
-
-  // Read the magnetometer data from the LSM303AGR.
-  HAL_I2C_Mem_Read(&hi2c1, LSM303AGR_ADDRESS, 0x00, I2C_MEMADD_SIZE_8BIT, data, 6, HAL_MAX_DELAY);
-  char buffer[MAX_CHAR];
-
-  // Convert the magnetometer data to milliGauss.
-  float x = (data[1] << 8) | data[0];
-  float y = (data[3] << 8) | data[2];
-  float z = (data[5] << 8) | data[4];
-
-  // Print the magnetometer data to the console.
-  sprintf(buffer,"x = %d  y = %d  z = %d \r\n", x,y,z);
-  HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
-	HAL_Delay(500);
-
+void enable_clocks() {
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOCEN | RCC_AHBENR_GPIOEEN;
 }
-
+void initialise_board() {
+	// get a pointer to the second half word of the MODER register (for outputs pe8-15)
+	uint16_t *led_output_registers = ((uint16_t *)&(GPIOE->MODER)) + 1;
+	*led_output_registers = 0x5555;
+}
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -119,6 +110,10 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+
+	enable_clocks();
+	initialise_board();
+	uint8_t *led_register = ((uint8_t*)&(GPIOE->ODR)) + 1;
 
   /* USER CODE END Init */
 
@@ -137,33 +132,16 @@ int main(void)
   MX_UART4_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-	/*uint8_t regValue = 0x00;
-	uint8_t regVal = 0x70;
-	returnValue = HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, 0x60, 1, &regValue, 1, HAL_MAX_DELAY);
-
-	if (returnValue != HAL_OK)
-	{
-		strcpy(buffer, "You done fucked up\r\n");
-		HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
-		returnValue = HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, 0x60, 1, &regValue, 1, 10);
-
-	}
-	HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, CFG_REG_A_M, I2C_MEMADD_SIZE_8BIT, &regVal, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, CFG_REG_C_M, I2C_MEMADD_SIZE_8BIT, 0x01, 1, HAL_MAX_DELAY);
-	HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, CTRL_REG1_M, I2C_MEMADD_SIZE_8BIT, 0x57, 1, HAL_MAX_DELAY);
-
-*/
-	//uint8_t regValue = 0x57;
 	  // Write the 0x00 to the CNTL register to reset the magnetometer
 	  uint8_t regValue = 0x00;
-	  HAL_I2C_Mem_Write(&hi2c1, MAG_WRITE, 0x60, 1, &regValue, 1, 10);
+	  HAL_I2C_Mem_Write(&hi2c1, MAG_WRITE, CFG_REG_A_M, 1, &regValue, 1, 10);
 
 	  // Wait for the magnetometer to be ready
 	  HAL_Delay(100);
 
 	  // Set the magnetometer to continuous measurement mode
 	  regValue = 0x01;
-	  HAL_I2C_Mem_Write(&hi2c1, MAG_WRITE, 0x62, 1, &regValue, 1, 10);
+	  HAL_I2C_Mem_Write(&hi2c1, MAG_WRITE, CFG_REG_C_M, 1, &regValue, 1, 10);
 
 	if (returnValue != HAL_OK)
 	{
@@ -180,26 +158,43 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		  uint8_t xMSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x69, 1, &xMSB, 1, 10);
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTX_H_REG_M, 1, &xMSB, 1, 10);
 		  uint8_t xLSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x68, 1, &xLSB, 1, 10);
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTX_L_REG_M, 1, &xLSB, 1, 10);
 		  uint16_t magX = ((xMSB << 8) | xLSB);
 
 		  uint8_t yMSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x6B, 1, &yMSB, 1, 10);
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTY_H_REG_M, 1, &yMSB, 1, 10);
 		  uint8_t yLSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x6A, 1, &yLSB, 1, 10);
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTY_L_REG_M, 1, &yLSB, 1, 10);
 		  uint16_t magY = ((yMSB << 8) | yLSB);
 
 		  uint8_t zMSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x6D, 1, &zMSB, 1, 10);
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTZ_H_REG_M, 1, &zMSB, 1, 10);
 		  uint8_t zLSB = 0x00;
-		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x6C, 1, &zLSB, 1, 10);
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTZ_L_REG_M, 1, &zLSB, 1, 10);
 		  uint16_t magZ = ((zMSB << 8) | zLSB);
 
-		  sprintf(buffer, "magX = %d magY = %d magZ = %d\r\n", magX, magY, magZ);
+		  uint16_t strength = atan2(magY,magX)*180/3.14159265358979323846; //Extracting the strength of the magnets from the X and Y values
+		  sprintf(buffer,"Strength = %d\r\n",strength );
 		  HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
-		HAL_Delay(500);
+		  HAL_Delay(100);
+		  if(strength >=70) // If the magnetic field is above this threshold, the magnet is found
+		  {
+			  *led_register = 0b11111111;
+		  }
+		  else if(strength >=40)//If the magnetic strength is above a certain threshold, then lights will turn on to indicate closeness to magnetic field.
+		  {
+			  *led_register =0b00001111;
+		  }
+		  else
+		  {
+			  *led_register =0b00000000;
+		  }
+
+
+
+
   }
   /* USER CODE END 3 */
 }
