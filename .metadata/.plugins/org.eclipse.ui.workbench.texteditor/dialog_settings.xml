@@ -8,28 +8,28 @@
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
-			<item value="HAL_TIM_IC_CaptureCallback"/>
-			<item value="lidar_distance"/>
+			<item value="__HAL_TIM_SET_COUNTER"/>
+			<item value="SET"/>
+			<item value="timer_value"/>
 			<item value="last_period"/>
-			<item value="scalingFactor"/>
-			<item value="TIM_HandleTypeDef"/>
-			<item value="TIM1"/>
-			<item value="HAL_TIM_ACTIVE_CHANNEL_1"/>
-			<item value="TIM_HandleTypeDef *htim"/>
-			<item value="lidar_value"/>
-			<item value="LIDAR_WR"/>
+			<item value="vertical_PWM"/>
+			<item value="calculateDistance"/>
+			<item value="led_groups"/>
+			<item value="led_register"/>
+			<item value="LD4"/>
+			<item value="HAL_GPIO_WritePin(GPIOE, LD4_Pin, GPIO_PIN_SET);&#x0A;"/>
+			<item value="LD6"/>
 			<item value="string_to_send"/>
-			<item value="hi2c1"/>
-			<item value="HAL_I2C_Mem_Write"/>
-			<item value="Delay"/>
-			<item value="PWM_direction_clockwise"/>
+			<item value="TIM3_CHANNEL_1"/>
+			<item value="TIM_CHANNEL_1"/>
+			<item value="TIM"/>
 		</list>
 		<list key="replacehistory">
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="792"/>
-		<item key="DIALOG_Y_ORIGIN" value="259"/>
+		<item key="DIALOG_X_ORIGIN" value="980"/>
+		<item key="DIALOG_Y_ORIGIN" value="456"/>
 		<item key="DIALOG_WIDTH" value="336"/>
 		<item key="DIALOG_HEIGHT" value="402"/>
 		<item key="DIALOG_FONT_NAME" value="1|.AppleSystemUIFont|11.0|0|COCOA|1|.AppleSystemUIFont"/>

@@ -1,4 +1,7 @@
+"./Core/Src/highfive.o"
+"./Core/Src/last_period.o"
 "./Core/Src/main.o"
+"./Core/Src/movement.o"
 "./Core/Src/ptu_i2c.o"
 "./Core/Src/serial.o"
 "./Core/Src/stm32f3xx_hal_msp.o"

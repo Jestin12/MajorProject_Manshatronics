@@ -25,8 +25,10 @@
 #include "ptu_definitions.h"
 #include "ptu_i2c.h"
 #include "serial.h"
-
+#include "last_period.h"
 #include "math.h"
+#include "movement.h"
+#include "highfive.h"
 
 /* USER CODE END Includes */
 
@@ -56,7 +58,7 @@ TIM_HandleTypeDef htim3;
 PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN PV */
-uint8_t *led_register = ((uint8_t*)&(GPIOE->ODR)) + 1;
+//led_register = ((uint8_t*)&(GPIOE->ODR)) + 1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -82,12 +84,7 @@ void enable_clocks() {
 
 
 // initialise the discovery board I/O (just outputs: inputs are selected by default)
-void initialise_board() {
-	// get a pointer to the second half word of the MODER register (for outputs pe8-15)
-	uint16_t *led_output_registers = ((uint16_t *)&(GPIOE->MODER)) + 1;
-	*led_output_registers = 0x5555;
-}
-
+void initialise_board();
 
 
 uint16_t last_capture = 0;
@@ -96,47 +93,16 @@ uint16_t diff = 0;
 uint16_t rise_time = 0;
 uint16_t last_period = 0;
 
-float lidar_distance = 0;
 
-const float SPEED_OF_LIGHT = 299792458.0;
-
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
-{
-	uint8_t buffer[32];
-	if (htim->Instance == TIM1 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
-	{
-		uint16_t IC_Val1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); // read the first value
-
-		if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_8) == 1)
-			rise_time = IC_Val1;
-		else
-			last_period = IC_Val1 - rise_time;
-
-		diff = IC_Val1 - last_capture;
-		last_capture = IC_Val1;
-
-	}
-}
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 
 float v[2] = {0, 0};
 
-void movement(float v[2], float yaw, float pitch){
+void movement(float v[2], float yaw, float pitch);
 
-	float c = 2700/180;
+uint8_t *led_register = ((uint8_t*)&(GPIOE->ODR)) + 1;
 
-	if (yaw == 0){
-		yaw += 1;
-	}
-	if (pitch == 0){
-		pitch += 1;
-	}
-	TIM2->CCR1 = c*yaw;
-	TIM2->CCR2 = c*pitch;
-
-	v[0] = yaw;
-	v[1] = pitch;
-
-}
+void highfive(uint32_t time,int *x);
 
 volatile uint8_t delayComplete = 0;
 
@@ -158,7 +124,7 @@ void readPWMInputCapture()
     pwmCaptureValue = HAL_TIM_ReadCapturedValue(&htim, TIM_CHANNEL_1); // Replace X with the appropriate channel number
 }
 
-
+int x = 0;
 
 /* USER CODE END 0 */
 
@@ -202,15 +168,16 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_I2C1_Init();
-  MX_SPI1_Init();
-  MX_USB_PCD_Init();
-  MX_TIM2_Init();
-  MX_TIM1_Init();
-  MX_TIM3_Init();
+	MX_GPIO_Init();
+	MX_I2C1_Init();
+	MX_SPI1_Init();
+	MX_USB_PCD_Init();
+	MX_TIM2_Init();
+	MX_TIM1_Init();
+	MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
+	// All timer are started
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
@@ -240,46 +207,16 @@ int main(void)
 	uint8_t reset_value = 0x00;
 	return_value = HAL_I2C_Mem_Write(&hi2c1, LIDAR_WR, 0x00, 1, &reset_value, 1, 10);
 
-	uint8_t PWM_direction_clockwise = 1;
 
 	// delay for initialisation of the lidar
 	HAL_Delay(100);
 
 	while (1)
 	{
-//		if (PWM_direction_clockwise == 1) {
-//			vertical_PWM += 3;
-//			horizontal_PWM += 3;
-//		}
-//		else {
-//			vertical_PWM -= 3;
-//			horizontal_PWM -= 3;
-//		}
-//
-//		if (vertical_PWM > 1900) {
-//			vertical_PWM = 1900;
-//			PWM_direction_clockwise = 0;
-//		}
-//		if (vertical_PWM < 1200) {
-//			vertical_PWM = 1200;
-//			PWM_direction_clockwise = 1;
-//		}
-//
-
-//		vertical_PWM = 1000;
-//		horizontal_PWM = 100;
-
-//		TIM2->CCR1 = horizontal_PWM;
-//		TIM2->CCR2 = vertical_PWM;
-
-//		movement(v, 60, 70);
-//		HAL_Delay(1500);
-//		movement(v, 120, 120);
-//		HAL_Delay(1500);
-//
 		movement(v, 96, 98);
 		HAL_Delay(500);
 
+		// Reading accelerometer values
 		uint8_t xMSB = 0x00;
 		HAL_I2C_Mem_Read(&hi2c1,gyro_rd, 0x29, 1, &xMSB, 1, 10);
 		uint8_t xLSB = 0x00;
@@ -298,111 +235,35 @@ int main(void)
 		HAL_I2C_Mem_Read(&hi2c1,gyro_rd, 0x2C, 1, &zLSB, 1, 10);
 		int16_t roll_rate = ((zMSB << 8) | zLSB);
 
-//		if (pitch_rate < 0)
-//			led_register->led_groups.led_pair_1 = 0b01;
-//		else
-//			led_register->led_groups.led_pair_1 = 0b10;
-//
-//		if (yaw_rate < 0)
-//			led_register->led_groups.led_pair_2 = 1;
-//		else
-//			led_register->led_groups.led_pair_2 = 2;
-
 
 		uint8_t lidar_value = 0x03;
 		return_value = HAL_I2C_Mem_Write(&hi2c1, LIDAR_WR, 0x00, 1, &lidar_value, 1, 100);
 
 		lidar_value = 0xff;
 
-		uint8_t lidar_MSBa = 0x00;
-		uint8_t lidar_LSBa = 0x00;
-
 		volatile uint16_t lidar_distance = 0xff;
 
-		uint16_t timeout;
-
-//		while ((lidar_value & 0x01) != 0x00) {
-//			return_value = HAL_I2C_Mem_Read(&hi2c1, LIDAR_RD, 0x01, 1, &lidar_value, 1, 100);
-//
-//			return_value = HAL_I2C_Mem_Read(&hi2c1, LIDAR_RD, 0x0f, 1, &lidar_MSBa, 1, 100);
-//			return_value = HAL_I2C_Mem_Read(&hi2c1, LIDAR_RD, 0x10, 1, &lidar_LSBa, 1, 100);
-//
-//			lidar_distance = ((lidar_MSBa << 8) | lidar_LSBa);
-//			timeout += 1;
-//			if (timeout > 0xff)
-//				break;
-//		}
-
-//		float lidar_distance = calculateDistance(last_period);
-//        readPWMInputCapture();
-
-        // Process the captured PWM value to calculate the lidar distance
-        // Adjust the calculation based on your specific lidar sensor specifications
-
-        // Example: calculate distance using a scaling factor
-//        float lidarDistance = pwmCaptureValue * scalingFactor;
 
 		uint8_t lidar_ranges = lidar_distance / (100/4); // 100cm broken into 4 groups
 		if (lidar_ranges > 3)
 			lidar_ranges = 3;
 
-		uint8_t led_values = pow(2, lidar_ranges);
-
-//		led_register->led_groups.led_set_of_4 = led_values;
-
-		volatile int read_values_now = 0;
 
 		if (last_period > 4000)
 			last_period = 5000;
 		if (lidar_distance > 4000)
 			lidar_distance = 5500;
 
+		// saving the the timer value for comparison as a constant
 		const uint32_t time = __HAL_TIM_GET_COUNTER(&htim3);
-		int x = 0;
 
+		x = 0;
 		while (last_period >= 5 && last_period <= 250)
 		{
-			uint32_t delayCounts = 3000; // Assuming timer counts at 1 kHz
-			uint32_t targetCount = time + delayCounts;
-			if (targetCount > 3000)
-			{
-				targetCount = targetCount - 3000.5;
-			}
 
-			int LED_time = time + 375*x;
-			if (LED_time > 3000)
-			{
-				LED_time = LED_time - 3000.5;
-			}
-			if (__HAL_TIM_GET_COUNTER(&htim3) == LED_time)
-			{
-				*led_register |= (0b00000001 << x);   // Set the bit corresponding to LED x
-				x++;
-			}
-
-
-			sprintf(string_to_send,"%u,%u\r\n", __HAL_TIM_GET_COUNTER(&htim3),targetCount);
-			SerialOutputString(string_to_send, &USART1_PORT);
-
-		    if(__HAL_TIM_GET_COUNTER(&htim3) != targetCount)
-		    {
-		        // Your code here, or do nothing
-		    }
-		    else
-		    {
-				while (1)
-				{
-					// Your code here, or do nothing
-					movement(v, 120, 55);
-					*led_register = 0;
-					HAL_Delay(500);
-
-				}
-		    }
-//		    *led_register = 0;
-//		    led_register->led_groups.led_pair_1 = 0b10;
-
+			highfive(time,&x);
 		}
+
 		*led_register = 0;
 		sprintf(string_to_send, "%u,%u,%u,%hd,%hd,%hd\r\n", last_period, lidar_distance, lidar_ranges,roll_rate, pitch_rate, yaw_rate);
 

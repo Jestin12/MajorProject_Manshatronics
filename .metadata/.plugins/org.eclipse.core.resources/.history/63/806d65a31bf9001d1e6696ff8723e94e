@@ -1,0 +1,58 @@
+#include "main.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+
+#include "ptu_definitions.h"
+#include "ptu_i2c.h"
+#include "serial.h"
+
+#include "math.h"
+
+#include "timer.h"
+#include "last_period.h"
+#include "movement.h"
+#include <time.h>
+
+
+void lock1()
+{
+	srand(time(NULL));
+	uint8_t string_to_send[100] = "This is a string !\r\n";
+
+    // Generate a random value within the range [min, max]
+    int distance = rand() % 2000;
+
+    sprintf(string_to_send,"%u,%u\r\n",distance,last_period);
+	SerialOutputString(string_to_send, &USART1_PORT);
+
+	const uint32_t time = TIM3->CNT;
+
+
+    while (last_period >= (distance - 250) && last_period <= (distance + 250))
+    {
+
+		uint32_t delayCounts = 3000; // Assuming timer counts at 1 kHz
+		uint32_t targetCount = time + delayCounts;
+
+	    sprintf(string_to_send,"%u,%u\r\n",time,targetCount);
+		SerialOutputString(string_to_send, &USART1_PORT);
+
+		if (targetCount > TIM3->ARR +1)
+		{
+			targetCount = targetCount - (TIM3->ARR+1.5);
+		}
+		if(TIM3->CNT != targetCount)
+		{
+			// Your code here, or do nothing
+		}
+		else
+		{
+			movement(v, 180, 180);
+			HAL_Delay(500);
+		}
+//		sprintf(string_to_send,"%u,%u\r\n",TIM3->CNT,last_period);
+//		SerialOutputString(string_to_send, &USART1_PORT);
+    }
+
+}

@@ -1,3 +1,4 @@
 ../Core/Src/serial.c:56:6:SerialInitialise	32	static
 ../Core/Src/serial.c:115:6:SerialOutputChar	16	static
 ../Core/Src/serial.c:124:6:SerialOutputString	24	static
+../Core/Src/serial.c:137:6:initialise_board	16	static

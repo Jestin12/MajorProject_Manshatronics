@@ -34,34 +34,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := High_five
+BUILD_ARTIFACT_NAME := major-project-base
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-High_five.elf \
+major-project-base.elf \
 
 MAP_FILES += \
-High_five.map \
+major-project-base.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-High_five.list \
+major-project-base.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: High_five.elf secondary-outputs
+main-build: major-project-base.elf secondary-outputs
 
 # Tool invocations
-High_five.elf High_five.map: $(OBJS) $(USER_OBJS) /Users/neelbagayatkar/Documents/Project/MajorProject_Manshatronics/High_five/STM32F303VCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "High_five.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/neelbagayatkar/Documents/Project/MajorProject_Manshatronics/High_five/STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="High_five.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+major-project-base.elf major-project-base.map: $(OBJS) $(USER_OBJS) /Users/neelbagayatkar/Documents/Project/MajorProject_Manshatronics/High_five/STM32F303VCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "major-project-base.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/neelbagayatkar/Documents/Project/MajorProject_Manshatronics/High_five/STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="major-project-base.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -70,14 +70,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-High_five.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "High_five.list"
+major-project-base.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "major-project-base.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) High_five.elf High_five.list High_five.map default.size.stdout
+	-$(RM) default.size.stdout major-project-base.elf major-project-base.list major-project-base.map
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
