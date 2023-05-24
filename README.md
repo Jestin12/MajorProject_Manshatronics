@@ -15,7 +15,7 @@ Jestin – Simon says (main), RemoteServo (main), (assist) servo movement functi
 
 Josh - Connect the wires  
 
-Mansh – Combination lock (main), RemoteServo (assist)  
+Mansh – Magnetic Detector (main), RemoteServo (assist)  
 
 Zach – CAT Scan (main) 
 
@@ -66,9 +66,9 @@ At the completion of each level, the LED wheel will display certain LEDs of diff
 
 
 
-### **Combination Lock** 
+### **Combination Lock \ Magnetic Detector** 
 The combination lock is a puzzle designed to act like an ordinary combination lock, but using the magnetometer of the discovery board instead of an actual physical mechanism. The combination lock would use the magnetometer to find the relative heading of the discovery board, from 0 to 360. In a typical combination lock, different numbers are placed at different angles, and so the discovery board could be placed in a mold so that it can only rotate in place, with the mold having numbers around the edge just as a typical combination lock would. Each number will correspond to a different angle, which can be implemented in the code. The player of the escape room would then need to discover the combination for the lock through the other puzzles, and then input those by spinning the discovery board in a specific way.
-**Files Overview**
+**Files Overview for combination lock**
 - main.c
   - This file consists of HAL functions to extract raw data from the magnetometer, with all the appropriate register address and the correct startup sequence.
 - heading.c (proposed)
@@ -80,3 +80,5 @@ The combination lock is a puzzle designed to act like an ordinary combination lo
   - If the user rotates the discovery board the correct amount, the board will flash green. If the user does this incorrectly, the board will flash red, and the user will       need to restart the combination lock from the beginning
   - The user will need to turn to a range of different values acquired throughout the rest of the game, which will be indicated by the numbers on the mold
   - A timer will also be implemented, giving the user a short time period to rotate the board to each value, and if this timeframe is exceeded, the challenge will restart
+  However, due to limitations of the magnetometer sensor module itself, including noise and low sensitivity, this was not a viable idea, and so, the Magnetic Detector game   was created instead:
+  This game involves a magnetic pad being placed underneath a piece of grid paper. The magnetic pad will have magnets dotted around the area, and by using the discovery       board as a sensor, the location of the magnets can be found. The grid location coordinates of the magnetic locations will be a code that once put together, allows the     RemotePuzzle game to be activated
