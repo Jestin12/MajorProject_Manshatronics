@@ -69,6 +69,8 @@ uint8_t input;
 
 uint8_t *led_register = ((uint8_t*)&(GPIOE->ODR)) + 1;
 uint8_t *integ_register = ((uint8_t*)&(GPIOD->ODR));
+uint8_t mask = 0b0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -147,15 +149,15 @@ int main(void)
   HD44780_Clear();
 
 
-  Lcd_cursor(&lcd, 0, 1);
-//  HD44780_SetCursor(0,1);
-  Lcd_string(&lcd, "Code Input");
-//  HD44780_PrintStr("Code Input");
+//  Lcd_cursor(&lcd, 0, 1);
+  HD44780_SetCursor(1,0);
+//  Lcd_string(&lcd, "Code Input");
+  HD44780_PrintStr("Code Input");
 
-  Lcd_cursor(&lcd, 1, 3);
-//  HD44780_SetCursor(1,3);
-  Lcd_string(&lcd, "Starting");
-//  HD44780_PrintStr("Starting");
+//  Lcd_cursor(&lcd, 1, 3);
+  HD44780_SetCursor(3,1);
+//  Lcd_string(&lcd, "Starting");
+  HD44780_PrintStr("Starting");
 
   HAL_Delay(2000);
 
@@ -171,105 +173,105 @@ int main(void)
 
 	  for (int i = 0; i < 2; i++)
 	  {
-		  Lcd_clear(&lcd);
-//		  HD44780_Clear();
+//		  Lcd_clear(&lcd);
+		  HD44780_Clear();
 
-		  Lcd_cursor(&lcd, 0, 0);
-//		  HD44780_SetCursor(0,0);
+//		  Lcd_cursor(&lcd, 0, 0);
+		  HD44780_SetCursor(0,0);
 
-		  Lcd_string(&lcd, "Press CH to ");
-//		  HD44780_PrintStr("Press CH to ");
+//		  Lcd_string(&lcd, "Press CH to ");
+		  HD44780_PrintStr("Press CH to ");
 
-		  Lcd_cursor(&lcd, 1, 0);
-//		  HD44780_SetCursor(1,0);
+//		  Lcd_cursor(&lcd, 1, 0);
+		  HD44780_SetCursor(0, 0);
 
-		  Lcd_string(&lcd, "input");
-//		  HD44780_PrintStr("input");
+//		  Lcd_string(&lcd, "input");
+		  HD44780_PrintStr("input");
 
 
 		  while(code != 16736925){} // "CH"
 
-		  Lcd_clear(&lcd);
-//		  HD44780_Clear();
+//		  Lcd_clear(&lcd);
+		  HD44780_Clear();
 
-		  Lcd_cursor(&lcd, 0, 1);
-//		  HD44780_SetCursor(0,1);
+//		  Lcd_cursor(&lcd, 0, 1);
+		  HD44780_SetCursor(1, 0);
 
-		  Lcd_string(&lcd, "Awaiting input");
-//		  HD44780_PrintStr("Awaiting input");
+//		  Lcd_string(&lcd, "Awaiting input");
+		  HD44780_PrintStr("Awaiting input");
 
 
-		  Lcd_cursor(&lcd, 0, 15);
-//		  HD44780_SetCursor(0,15);
+//		  Lcd_cursor(&lcd, 0, 15);
+		  HD44780_SetCursor(15, 0);
 
-		  Lcd_int(&lcd, i + 1);
-//		   sprintf(lcd_num, "%d", i +1);
-//		   HD44780_PrintStr(lcd_num);
+//		  Lcd_int(&lcd, i + 1);
+		   sprintf(lcd_num, "%d", i +1);
+		   HD44780_PrintStr(lcd_num);
 
 
 		  while(code == 16736925){} // waits for the first input
-		  Lcd_clear(&lcd);
-//		  HD44780_Clear();
+//		  Lcd_clear(&lcd);
+		  HD44780_Clear();
 
 
-		  Lcd_cursor(&lcd, 0, 15);	//shows which number in the code your inputting
-//		  HD44780_SetCursor(0,15);
+//		  Lcd_cursor(&lcd, 0, 15);	//shows which number in the code your inputting
+		  HD44780_SetCursor(15, 0);
 
-		  Lcd_int(&lcd, i + 1);
-//		   sprintf(lcd_num, "%d", i +1);
-//		   HD44780_PrintStr(lcd_num);
+//		  Lcd_int(&lcd, i + 1);
+		   sprintf(lcd_num, "%d", i +1);
+		   HD44780_PrintStr(lcd_num);
 
-		  Lcd_cursor(&lcd, 0, 0);
-//		  HD44780_SetCursor(0,0);
+//		  Lcd_cursor(&lcd, 0, 0);
+		  HD44780_SetCursor(0,0);
 
-		  Lcd_string(&lcd, "Received!");
-//		  HD44780_PrintStr("Received");
+//		  Lcd_string(&lcd, "Received!");
+		  HD44780_PrintStr("Received");
 
 
-		  Lcd_cursor(&lcd, 1, 3);
-//		  HD44780_SetCursor(1,3);
+//		  Lcd_cursor(&lcd, 1, 3);
+		  HD44780_SetCursor(3, 1);
 
-		  Lcd_string(&lcd, "Input: ");
-//		  HD44780_PrintStr("Input");
+//		  Lcd_string(&lcd, "Input: ");
+		  HD44780_PrintStr("Input");
 
-		  Lcd_cursor(&lcd, 1, 10);
-//		  HD44780_SetCursor(1,10);
+//		  Lcd_cursor(&lcd, 1, 10);
+		  HD44780_SetCursor(10, 1);
 
-		  Lcd_int(&lcd, input);		//shows which number is passed as an input
-//		   sprintf(lcd_num, "%d", input);
-//		   HD44780_PrintStr(lcd_num);
+//		  Lcd_int(&lcd, input);		//shows which number is passed as an input
+		   sprintf(lcd_num, "%d", input);
+		   HD44780_PrintStr(lcd_num);
 
 		  wor_cord[i] = input;
 
 		  HAL_Delay(2000);
 	  }
 
-	  Lcd_clear(&lcd);
-//	  HD44780_Clear();
+//	  Lcd_clear(&lcd);
+	  HD44780_Clear();
 
-	  Lcd_cursor(&lcd, 0, 1);
-//	  HD44780_SetCursor(0,1);
+//	  Lcd_cursor(&lcd, 0, 1);
+	  HD44780_SetCursor(1, 0);
 
-	  Lcd_string(&lcd, "Co-ord received:   ");
-//	  HD44780_PrintStr("Co-ord received:   ");
+//	  Lcd_string(&lcd, "Co-ord received:   ");
+	  HD44780_PrintStr("Co-ord received:   ");
 
 
 	  int j = 1;
 	  for (int i = 0; i < 2; i++)
 	  {
-		  Lcd_cursor(&lcd, 1, j);
-//		  HD44780_SetCursor(1,j);
+//		  Lcd_cursor(&lcd, 1, j);
+		  HD44780_SetCursor(j, 1);
 
-		  Lcd_int(&lcd, wor_cord[i]);
-//		   sprintf(lcd_num, "%d", wor_cord[i]);
-//		   HD44780_PrintStr(lcd_num);
+//		  Lcd_int(&lcd, wor_cord[i]);
+		   sprintf(lcd_num, "%d", wor_cord[i]);
+		   HD44780_PrintStr(lcd_num);
 		  j += 2;
 	  }
-	  Lcd_cursor(&lcd, 1, 2);
-//	  HD44780_SetCursor(1,2);
+//	  Lcd_cursor(&lcd, 1, 2);
+	  HD44780_SetCursor(2, 1);
 
-	  Lcd_string(&lcd, ",");
-//	  HD44780_PrintStr(",");
+//	  Lcd_string(&lcd, ",");
+	  HD44780_PrintStr(",");
 
 
 	  while(code != 16736925){} // "CH"
@@ -279,28 +281,34 @@ int main(void)
 //	  uint8_t cord2[2] = {2, 3};
 //	  uint8_t cord3[2] = {6, 4};
 
-	  if (*led_register == 0b00000111)
-	  {
-		  *integ_register = 0b1;	//to be connected to the next STM32 to indicate that the puzzle has been completed
-		  break;
-	  }
-	  else if (compare(wor_cord, cord1))
+
+	  if (compare(wor_cord, cord1) == 1)
 	  {
 		  *led_register |= 0b00000001 << 0;
+		  mask |= 0b00000001 << 0;
 	  }
-	  else if (compare(wor_cord, cord2))
+	  else if (compare(wor_cord, cord2) == 1)
 	  {
 		  *led_register |= 0b00000001 << 1;
+		  mask |= 0b00000001 << 1;
 	  }
-	  else if (compare(wor_cord, cord3))
+	  else if (compare(wor_cord, cord3) == 1)
 	  {
 		  *led_register |= 0b00000001 << 2;
+		  mask |= 0b00000001 << 2;
 	  }
 	  else
 	  {
 
 	  }
-
+	  if (mask == 0b00000111)
+	  {
+		  HD44780_Clear();
+		  HD44780_SetCursor(0,1);
+		  HD44780_PrintStr("Write PD1 HIGH");
+		  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 1);
+		  break;
+	  }
   }
   /* USER CODE END 3 */
 }
@@ -596,6 +604,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, CS_I2C_SPI_Pin|LD4_Pin|LD3_Pin|LD5_Pin
@@ -605,6 +614,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13
                           |GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : DRDY_Pin MEMS_INT3_Pin MEMS_INT4_Pin MEMS_INT1_Pin
                            MEMS_INT2_Pin */
@@ -645,6 +657,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PD1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
