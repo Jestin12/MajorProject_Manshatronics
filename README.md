@@ -1,15 +1,17 @@
 # MTRX2700 Major Project - Manshatronics
 ## Overview
-The Manshatronics team has created a series of interesting and unique problems which require
+The Manshatronics team has created a series of unique problems which require
 - Skill
 - Intelligence
 - Speed
 - Intelligence
+These puzzles utilize interesting hardware such as LCD displays, IR remotes, a magnetometer and *knobs*, while also implementing software features from the STM32 such as the ADC with DMA.
 ## Puzzle Progression
 1. Magnet Search
 2. Simon Says
 3. Power Communications
 4. Hi-five and LiDar lock
+5. *CAT Scan*
 
 ## Group Contributions
 Neel – High five (main), (assist) CAT-Scan and LiDar lock (back-up puzzle) 
