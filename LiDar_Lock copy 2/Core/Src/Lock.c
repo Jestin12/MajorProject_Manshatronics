@@ -21,13 +21,10 @@ uint8_t string_to_send[100] = "This is a string !\r\n";
 void lock1(int *y)
 {
 	srand(time(NULL));
-//	uint8_t string_to_send[100] = "This is a string !\r\n";
 
     // Generate a random value within the range [min, max]
     int distance = 200;
 
-//    sprintf(string_to_send,"%u,%u cunt\r\n",distance,last_period);
-//	SerialOutputString(string_to_send, &USART1_PORT);
 
 	const uint32_t time = TIM3->CNT;
 
@@ -38,8 +35,6 @@ void lock1(int *y)
 		uint32_t delayCounts = 3000; // Assuming timer counts at 1 kHz
 		uint32_t targetCount = time + delayCounts;
 
-//	    sprintf(string_to_send,"%u,%u pus\r\n",TIM3->CNT,targetCount);
-//		SerialOutputString(string_to_send, &USART1_PORT);
 
 		if (targetCount > TIM3->ARR +1)
 		{
@@ -60,8 +55,6 @@ void lock1(int *y)
 			*y+=1;
 			break;
 		}
-//		sprintf(string_to_send,"%u,%u\r\n",TIM3->CNT,last_period);
-//		SerialOutputString(string_to_send, &USART1_PORT);
     }
     *led_register = 0;
 }
@@ -72,9 +65,6 @@ void lock2(int *y)
 
     // Generate a random value within the range [min, max]
     int distance1 = 1200;
-
-//    sprintf(string_to_send,"%u\r\n",distance1);
-//	SerialOutputString(string_to_send, &USART1_PORT);
 
 	const uint32_t time = TIM3->CNT;
 
@@ -113,9 +103,6 @@ void lock3(int *y)
 
     // Generate a random value within the range [min, max]
     int distance2 = 2000;
-
-//    sprintf(string_to_send,"%u\r\n",distance1);
-//	SerialOutputString(string_to_send, &USART1_PORT);
 
 	const uint32_t time = TIM3->CNT;
 
