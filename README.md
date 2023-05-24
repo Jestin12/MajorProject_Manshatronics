@@ -26,7 +26,7 @@ Zach – CAT Scan (main)
 
 
 ### CAT Scan
-
+In this puzzle, the user must employ critical problem solving skills to overcome this puzzle. The puzzle starts by first displaying a clue via PuTTY. "All problems can be solved with a CAT scan. They begin with a simple: 10". The puzzle is acompanied with a cardboard cutout with 5 empty slots that the user can either fill in or leave empty. The solution to this puzzle is to input in binary the ASCII values of the letters of CAT, meaning '00011', '00001', '10100'.
 
 ### LiDar lock
 This puzzle uses the PTUs LiDAR functions to create an interactive and futuristic puzzle. This puzzle involves the player "high fiving" the LiDAR, which starts the game, and sets the LiDAR lock puzzle into motion. The PTU will rotate into a random position, at which point the player will need to place an object in the line of sight of the LiDAR. The object must also be placed at a specific distance away from the LiDAR, and when this distance is achieved, the an LED on the discovery board will light up. Once this distance is reached, the user must hold the object at that position for 3 seconds, after which the LiDAR will move into its next position. There is a total of 3 different  positions that the user must complete with various distances to finish the puzzle. In addition to this, the user has a countdown timer of 10 seconds that only pauses when the player is in the correct position for that specific lock. If this countdown timer runs out, the game resets back to the first lock, and the player must try again.
