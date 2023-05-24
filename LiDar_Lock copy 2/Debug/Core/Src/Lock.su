@@ -1,0 +1,3 @@
+../Core/Src/Lock.c:21:6:lock1	40	static
+../Core/Src/Lock.c:69:6:lock2	40	static
+../Core/Src/Lock.c:110:6:lock3	64	static
