@@ -192,6 +192,8 @@ int main(void)
   MX_TIM15_Init();
   /* USER CODE BEGIN 2 */
 
+  //Timers are started
+
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
@@ -218,11 +220,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
 
-	// reset lidar board
-	uint8_t reset_value = 0x00;
-	return_value = HAL_I2C_Mem_Write(&hi2c1, LIDAR_WR, 0x00, 1, &reset_value, 1, 10);
+//	// reset lidar board
+//	uint8_t reset_value = 0x00;
+//	return_value = HAL_I2C_Mem_Write(&hi2c1, LIDAR_WR, 0x00, 1, &reset_value, 1, 10);
 
-	uint8_t PWM_direction_clockwise = 1;
 
 	// delay for initialisation of the lidar
 	HAL_Delay(100);
@@ -233,6 +234,7 @@ int main(void)
 		movement(v, 96, 98);
 		HAL_Delay(500);
 
+		//Reading gyro values from imu using i2c
 		uint8_t xMSB = 0x00;
 		HAL_I2C_Mem_Read(&hi2c1,gyro_rd, 0x29, 1, &xMSB, 1, 10);
 		uint8_t xLSB = 0x00;
@@ -255,92 +257,67 @@ int main(void)
 		int16_t roll_rate = ((zMSB << 8) | zLSB);
 
 
-		uint8_t lidar_value = 0x03;
-		return_value = HAL_I2C_Mem_Write(&hi2c1, LIDAR_WR, 0x00, 1, &lidar_value, 1, 100);
-
-		lidar_value = 0xff;
-
-		uint8_t lidar_MSBa = 0x00;
-		uint8_t lidar_LSBa = 0x00;
-
-		volatile uint16_t lidar_distance = 0xff;
-
-		uint16_t timeout;
-
-		while ((lidar_value & 0x01) != 0x00) {
-			return_value = HAL_I2C_Mem_Read(&hi2c1, LIDAR_RD, 0x01, 1, &lidar_value, 1, 100);
-
-			return_value = HAL_I2C_Mem_Read(&hi2c1, LIDAR_RD, 0x0f, 1, &lidar_MSBa, 1, 100);
-			return_value = HAL_I2C_Mem_Read(&hi2c1, LIDAR_RD, 0x10, 1, &lidar_LSBa, 1, 100);
-
-			lidar_distance = ((lidar_MSBa << 8) | lidar_LSBa);
-			timeout += 1;
-			if (timeout > 0xff)
-				break;
-		}
-
-//		float lidar_distance = calculateDistance(last_period);
-//        readPWMInputCapture();
-
-        // Process the captured PWM value to calculate the lidar distance
-        // Adjust the calculation based on your specific lidar sensor specifications
-
-        // Example: calculate distance using a scaling factor
-//        float lidarDistance = pwmCaptureValue * scalingFactor;
-
-		uint8_t lidar_ranges = lidar_distance / (100/4); // 100cm broken into 4 groups
-		if (lidar_ranges > 3)
-		{
-			lidar_ranges = 3;
-		}
-		uint8_t led_values = pow(2, lidar_ranges);
-
 
 		volatile int read_values_now = 0;
 
+		//Last_period values are limited to 4000. If last_period is above 4000 then it is then set to 5000.
 		if (last_period > 4000)
 			last_period = 5000;
 		if (lidar_distance > 4000)
 			lidar_distance = 5500;
 
 
-		sprintf(string_to_send, "%u,%u,%u,%hd,%hd,%hd\r\n", last_period, lidar_distance, lidar_ranges,roll_rate, pitch_rate, yaw_rate);
+		sprintf(string_to_send, "%u,%hd,%hd,%hd\r\n", last_period,roll_rate, pitch_rate, yaw_rate);
 		SerialOutputString(string_to_send, &USART1_PORT);
 
+		//constant value is set so that the comparison value doesn't change
 		const uint32_t time = TIM3->CNT;
 
 		int x = 0;
 
+
+		/*The while reads for a high five. In which case the high five from the user has to be at a last period distance of 5 to 250
+		 * the threshold is set because there was noise within the last period values
+		 */
 		while (last_period >= 5 && last_period <= 250)
 		{
+			//using an output compare to know when a 3 second high five has been performed
 			uint32_t delayCounts = 3000; // Assuming timer counts at 1 kHz
 			uint32_t targetCount = time + delayCounts;
 
+			/*A target and is then manipulate to stay within the auto-reload. Hence the auto reload is subtracted from the target count
+			 * an addition 0.5 is subtracted to ensure the target count is less than the auto-reload*/
 			if (targetCount > TIM3->ARR)
 			{
 				targetCount = targetCount - (TIM3->ARR+0.5);
 			}
+
+			//an led time is set so the 8 LED lights light up at equal timesteps
+			//
 
 			int LED_time = time + (delayCounts/8)*x;
 			if (LED_time >  TIM3->ARR)
 			{
 				LED_time = LED_time - (TIM3->ARR+0.5);
 			}
+
+			//Led's light up in a circle. Like a circle of death
 			if (TIM3->CNT == LED_time)
 			{
 				*led_register |= (0b00000001 << x);   // Set the bit corresponding to LED x
 				x++;
 			}
 
-
+			//if statement runs when the hand is held for three seconds
 		    if(TIM3->CNT == targetCount)
 		    {
 				const uint32_t lock_timer = TIM15->CNT;
 
+				//while loops only runs if all three locks haven't been completed
 		    	while (y != 4)
 		    	{
 					uint32_t lock_delay = 10000;
-					uint32_t lock_target = lock_timer + lock_delay;
+					uint32_t lock_target = lock_timer + lock_delay; //comparison value
 
 					if (lock_target > TIM15->ARR +1)
 					{
@@ -348,27 +325,31 @@ int main(void)
 					}
 					*led_register = 0;
 
+					/*the user must enter the specific range corresponding to the distance set in each lock.
+					 * The user only has a maximum of 10 seconds to place an object within the lidar sensor in total for all
+					 * locks or else the program will return to the first lock ('else' statement)*/
 					if (TIM15->CNT != lock_target)
 					{
 						if (y == 1) {
-							sprintf(string_to_send,"%u,%u cunt\r\n",TIM15->CNT,lock_target);
+							sprintf(string_to_send,"%u,%u\r\n",TIM15->CNT,lock_target);
 							SerialOutputString(string_to_send, &USART1_PORT);
 							lock1(&y);
 						}
 						else if (y == 2) {
-							sprintf(string_to_send,"%u,%u cunt2\r\n",TIM15->CNT,lock_target);
+							sprintf(string_to_send,"%u,%u\r\n",TIM15->CNT,lock_target);
 							SerialOutputString(string_to_send, &USART1_PORT);
 							lock2(&y);
 						}
 						else if (y==3)
 						{
-							sprintf(string_to_send,"%u,%u,%u cunt3\r\n",TIM15->CNT,lock_target,last_period);
+							sprintf(string_to_send,"%u,%u,%u\r\n",TIM15->CNT,lock_target,last_period);
 							SerialOutputString(string_to_send, &USART1_PORT);
 							lock3(&y);
 						}
 
 
 					}
+					//
 					else
 					{
 						*led_register = 0b01010101;
@@ -382,7 +363,6 @@ int main(void)
 		    }
 	    }
 		*led_register = 0;
-//		    led_register->led_groups.led_pair_1 = 0b10;
 
 	}
 

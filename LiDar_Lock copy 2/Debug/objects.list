@@ -1,6 +1,5 @@
 "./Core/Src/Lock.o"
 "./Core/Src/last_period.o"
-"./Core/Src/lock2.o"
 "./Core/Src/main.o"
 "./Core/Src/movement.o"
 "./Core/Src/ptu_i2c.o"

@@ -1,3 +1,3 @@
 Lock.c:21:6:lock1	5
-Lock.c:69:6:lock2	5
-Lock.c:110:6:lock3	7
+Lock.c:62:6:lock2	5
+Lock.c:100:6:lock3	7
