@@ -5,6 +5,7 @@ The Manshatronics team has created a series of unique problems which require
 - Intelligence
 - Speed
 - Intelligence
+
 These puzzles utilize interesting hardware such as LCD displays, IR remotes, a magnetometer and *knobs*, while also implementing software features from the STM32 such as the ADC with DMA.
 ## Puzzle Progression
 1. Magnet Search
@@ -12,6 +13,11 @@ These puzzles utilize interesting hardware such as LCD displays, IR remotes, a m
 3. Power Communications
 4. Hi-five and LiDar lock
 5. *CAT Scan*
+
+## Rules of the Game
+1. Players must only use the given wires in the highlighted slots on the boards
+2. Players must not press any black buttons
+3. Players must not touch the paper
 
 ## Group Contributions
 Neel – High five (main), (assist) CAT-Scan and LiDar lock (back-up puzzle) 
