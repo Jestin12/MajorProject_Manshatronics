@@ -18,14 +18,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#define ACC_READ 0x3D
-#define ACC_WRITE 0x1E
+#define MAG_READ 0x3D
+#define MAG_WRITE 0x3C
 #define MAX_CHAR 300
 #define CTRL_REG1_M 0x20
 #define CTRL_REG2_M 0x21
 #define CTRL_REG3_M 0x22
 #define CFG_REG_A_M 0x60
 #define CFG_REG_C_M 0x62
+#define LSM303AGR_ADDRESS 0x1E
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -81,13 +83,34 @@ static void MX_USART1_UART_Init(void);
   * @brief  The application entry point.
   * @retval int
   */
+void read_magnetometer(void) {
+  // Read the magnetometer data from the LSM303AGR.
+  uint8_t data[6] = {0};
+
+  // Send the read command to the LSM303AGR.
+  HAL_I2C_Mem_Write(&hi2c1, LSM303AGR_ADDRESS, 0x00, I2C_MEMADD_SIZE_8BIT, data, 6, HAL_MAX_DELAY);
+
+  // Read the magnetometer data from the LSM303AGR.
+  HAL_I2C_Mem_Read(&hi2c1, LSM303AGR_ADDRESS, 0x00, I2C_MEMADD_SIZE_8BIT, data, 6, HAL_MAX_DELAY);
+  char buffer[MAX_CHAR];
+
+  // Convert the magnetometer data to milliGauss.
+  float x = (data[1] << 8) | data[0];
+  float y = (data[3] << 8) | data[2];
+  float z = (data[5] << 8) | data[4];
+
+  // Print the magnetometer data to the console.
+  sprintf(buffer,"x = %d  y = %d  z = %d \r\n", x,y,z);
+  HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
+	HAL_Delay(500);
+
+}
+
 int main(void)
 {
   /* USER CODE BEGIN 1 */
 	char buffer[MAX_CHAR];
-	char buffer1[100];
 	HAL_StatusTypeDef returnValue;
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -114,7 +137,7 @@ int main(void)
   MX_UART4_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-	uint8_t regValue = 0x00;
+	/*uint8_t regValue = 0x00;
 	uint8_t regVal = 0x70;
 	returnValue = HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, 0x60, 1, &regValue, 1, HAL_MAX_DELAY);
 
@@ -129,7 +152,24 @@ int main(void)
 	HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, CFG_REG_C_M, I2C_MEMADD_SIZE_8BIT, 0x01, 1, HAL_MAX_DELAY);
 	HAL_I2C_Mem_Write(&hi2c1, ACC_WRITE, CTRL_REG1_M, I2C_MEMADD_SIZE_8BIT, 0x57, 1, HAL_MAX_DELAY);
 
+*/
+	//uint8_t regValue = 0x57;
+	  // Write the 0x00 to the CNTL register to reset the magnetometer
+	  uint8_t regValue = 0x00;
+	  HAL_I2C_Mem_Write(&hi2c1, MAG_WRITE, 0x60, 1, &regValue, 1, 10);
 
+	  // Wait for the magnetometer to be ready
+	  HAL_Delay(100);
+
+	  // Set the magnetometer to continuous measurement mode
+	  regValue = 0x01;
+	  HAL_I2C_Mem_Write(&hi2c1, MAG_WRITE, 0x62, 1, &regValue, 1, 10);
+
+	if (returnValue != HAL_OK)
+	{
+		strcpy(buffer, "You done fucked up\r\n");
+		HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
+	}
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -139,33 +179,26 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		/*uint8_t xMSB = 0x00;
-		HAL_I2C_Mem_Read(&hi2c1,ACC_READ, 0X69, 1, &xMSB, 1, 10);
-		uint8_t xLSB = 0x00;
-		HAL_I2C_Mem_Read(&hi2c1,ACC_READ, 0x45, 1, &xLSB, 1, 10);
-		uint16_t accX = ((xMSB << 8) | xLSB);
+		  uint8_t xMSB = 0x00;
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x69, 1, &xMSB, 1, 10);
+		  uint8_t xLSB = 0x00;
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x68, 1, &xLSB, 1, 10);
+		  uint16_t magX = ((xMSB << 8) | xLSB);
 
-		uint8_t yMSB = 0x00;
-		HAL_I2C_Mem_Read(&hi2c1,ACC_READ, 0x6B, 1, &yMSB, 1, 10);
-		uint8_t yLSB = 0x00;
-		HAL_I2C_Mem_Read(&hi2c1,ACC_READ, 0x47, 1, &yLSB, 1, 10);
-		uint16_t accY = ((yMSB << 8) | yLSB);
+		  uint8_t yMSB = 0x00;
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x6B, 1, &yMSB, 1, 10);
+		  uint8_t yLSB = 0x00;
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x6A, 1, &yLSB, 1, 10);
+		  uint16_t magY = ((yMSB << 8) | yLSB);
 
-		uint8_t zMSB = 0x00;
-		HAL_I2C_Mem_Read(&hi2c1,ACC_READ, 0x6D, 1, &zMSB, 1, 10);
-		uint8_t zLSB = 0x00;
-		HAL_I2C_Mem_Read(&hi2c1,ACC_READ, 0x49, 1, &zLSB, 1, 10);
-		uint16_t accZ = ((zMSB << 8) | zLSB);*/
-	  	int16_t magnetometerX, magnetometerY, magnetometerZ;
+		  uint8_t zMSB = 0x00;
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x6D, 1, &zMSB, 1, 10);
+		  uint8_t zLSB = 0x00;
+		  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, 0x6C, 1, &zLSB, 1, 10);
+		  uint16_t magZ = ((zMSB << 8) | zLSB);
 
-		HAL_I2C_Mem_Read(&hi2c1, 0x3D, 0x68, I2C_MEMADD_SIZE_8BIT, (uint8_t *)&magnetometerX, sizeof(magnetometerX), HAL_MAX_DELAY);
-		HAL_I2C_Mem_Read(&hi2c1, 0x3D, 0x6A, I2C_MEMADD_SIZE_8BIT, (uint8_t *)&magnetometerY, sizeof(magnetometerY), HAL_MAX_DELAY);
-		HAL_I2C_Mem_Read(&hi2c1, 0x3D, 0x6C, I2C_MEMADD_SIZE_8BIT, (uint8_t *)&magnetometerZ, sizeof(magnetometerZ), HAL_MAX_DELAY);
-
-		int angle = -1*magnetometerX;
-		sprintf(buffer, "accX = %d accY = %d accZ = %d\r\n", magnetometerX, magnetometerY, magnetometerZ);
-		//sprintf(buffer, "Heading: %d\r\n", angle/4);
-		HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
+		  sprintf(buffer, "magX = %d magY = %d magZ = %d\r\n", magX, magY, magZ);
+		  HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
 		HAL_Delay(500);
   }
   /* USER CODE END 3 */
