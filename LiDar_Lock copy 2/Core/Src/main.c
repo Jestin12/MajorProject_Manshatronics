@@ -356,6 +356,8 @@ int main(void)
 						HAL_Delay(1000);
 						movement(v, 180, 98);
 						HAL_Delay(1000);
+						movement(v, 96, 98);
+						HAL_Delay(1000);
 						y= 1;
 						break;
 					}
