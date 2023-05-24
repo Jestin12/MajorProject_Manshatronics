@@ -133,7 +133,7 @@ int main(void)
   // Defining global variables
   uint16_t samples[7];
   char msg[100];
-  uint16_t upper_bound = 475;
+  uint16_t upper_bound = 525;
   uint16_t lower_bound = 375;
   uint8_t new_power_state = 0;
   uint8_t current_power_state = 0;
@@ -290,8 +290,6 @@ int main(void)
 		  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
 		  cur_reveal_state = 1;
 	  } else if ((cur_reveal_state == 1) && (next_reveal_state == 0)) {
-		  // Set the GPIO pin low
-		  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
 		  cur_reveal_state = 0;
 	  }
 
@@ -325,6 +323,8 @@ int main(void)
 		  HD44780_Clear();
 		  HD44780_SetCursor(0,0);
 		  HD44780_PrintStr("Power off ...");
+		  // Set the GPIO pin low
+		  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
 		  current_power_state = 0;
 	  } else {
 		  current_power_state = new_power_state;
