@@ -60,8 +60,8 @@ all: main-build
 main-build: MagneticDetector.elf secondary-outputs
 
 # Tool invocations
-MagneticDetector.elf MagneticDetector.map: $(OBJS) $(USER_OBJS) C:\Users\mansh\Downloads\MagneticDetector\STM32F303VCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "MagneticDetector.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\mansh\Downloads\MagneticDetector\STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MagneticDetector.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+MagneticDetector.elf MagneticDetector.map: $(OBJS) $(USER_OBJS) C:\Users\mansh\OneDrive\ -\ The\ University\ of\ Sydney\ (Students)\Desktop\MajorAssignment\MajorProject_Manshatronics\MagneticDetector\STM32F303VCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "MagneticDetector.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\mansh\OneDrive - The University of Sydney (Students)\Desktop\MajorAssignment\MajorProject_Manshatronics\MagneticDetector\STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MagneticDetector.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
