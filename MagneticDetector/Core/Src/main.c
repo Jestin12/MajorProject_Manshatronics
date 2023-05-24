@@ -97,9 +97,9 @@ void initialise_board() {
 	uint16_t *led_output_registers = ((uint16_t *)&(GPIOE->MODER)) + 1;
 	*led_output_registers = 0x5555;
 }
-void read_magnetometer(uint16_t* magX, uint16_t* magY, uint16_t* magZ )
+void read_magnetometer(uint16_t* magX, uint16_t* magY, uint16_t* magZ ) // Function to read the magnetometer values
 {
-	  uint8_t xMSB = 0x00;
+	  uint8_t xMSB = 0x00;												// Using MSB and LSB to find the actual raw x,y and z values of magnetometer
 	  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTX_H_REG_M, 1, &xMSB, 1, 10);
 	  uint8_t xLSB = 0x00;
 	  HAL_I2C_Mem_Read(&hi2c1,MAG_READ, OUTX_L_REG_M, 1, &xLSB, 1, 10);
@@ -119,11 +119,51 @@ void read_magnetometer(uint16_t* magX, uint16_t* magY, uint16_t* magZ )
 
 
 }
+void configuring_magnetometer()
+{
+	  HAL_StatusTypeDef returnValue;
+	  char buffer[MAX_CHAR];
+	  // Write the 0x00 to the CNTL register to reset the magnetometer
+	  uint8_t regValue = 0x00;
+	  HAL_I2C_Mem_Write(&hi2c1, MAG_WRITE, CFG_REG_A_M, 1, &regValue, 1, 10);
+
+	  // Wait for the magnetometer to be ready
+	  HAL_Delay(30);
+
+	  // Set the magnetometer to continuous measurement mode
+	  regValue = 0x01;
+	  HAL_I2C_Mem_Write(&hi2c1, MAG_WRITE, CFG_REG_C_M, 1, &regValue, 1, 10);
+
+	if (returnValue != HAL_OK)
+	{
+		strcpy(buffer, "You done fucked up\r\n");
+		HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
+	}
+
+}
+void detecting_magnets(uint8_t* led_register, uint16_t* strength)
+{
+	  char buffer[MAX_CHAR];
+	  sprintf(buffer,"Strength = %d\r\n",*strength );
+	  HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
+	  HAL_Delay(100);
+	  if(*strength >=70) // If the magnetic field is above this threshold, the magnet is found
+	  {
+		  led_register = 0b11111111;
+	  }
+	  else if(*strength >=40)//If the magnetic strength is above a certain threshold, then lights will turn on to indicate closeness to magnetic field.
+	  {
+		  led_register =0b00001111;
+	  }
+	  else
+	  {
+		  led_register =0b00000000;
+	  }
+
+}
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	char buffer[MAX_CHAR];
-	HAL_StatusTypeDef returnValue;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -154,22 +194,7 @@ int main(void)
   MX_UART4_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-	  // Write the 0x00 to the CNTL register to reset the magnetometer
-	  uint8_t regValue = 0x00;
-	  HAL_I2C_Mem_Write(&hi2c1, MAG_WRITE, CFG_REG_A_M, 1, &regValue, 1, 10);
-
-	  // Wait for the magnetometer to be ready
-	  HAL_Delay(100);
-a
-	  // Set the magnetometer to continuous measurement mode
-	  regValue = 0x01;
-	  HAL_I2C_Mem_Write(&hi2c1, MAG_WRITE, CFG_REG_C_M, 1, &regValue, 1, 10);
-
-	if (returnValue != HAL_OK)
-	{
-		strcpy(buffer, "You done fucked up\r\n");
-		HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
-	}
+  configuring_magnetometer();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -185,22 +210,7 @@ a
 		  uint16_t magZ;
 	  	  read_magnetometer(&magX, &magY, &magZ);
 		  uint16_t strength = atan2(magY,magX)*180/3.14159265358979323846; //Extracting the strength of the magnets from the X and Y values
-		  sprintf(buffer,"Strength = %d\r\n",strength );
-		  HAL_UART_Transmit(&huart1, buffer, strlen(buffer), HAL_MAX_DELAY);
-		  HAL_Delay(100);
-		  if(strength >=70) // If the magnetic field is above this threshold, the magnet is found
-		  {
-			  *led_register = 0b11111111;
-		  }
-		  else if(strength >=40)//If the magnetic strength is above a certain threshold, then lights will turn on to indicate closeness to magnetic field.
-		  {
-			  *led_register =0b00001111;
-		  }
-		  else
-		  {
-			  *led_register =0b00000000;
-		  }
-
+		  detecting_magnets(led_register, &strength);
 
 
 
