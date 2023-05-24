@@ -32,15 +32,15 @@ Zach – CAT Scan (main)
 This puzzle uses the PTUs LiDAR functions to create an interactive and futuristic puzzle. This puzzle involves the player "high fiving" the LiDAR, which starts the game, and sets the LiDAR lock puzzle into motion. The PTU will rotate into a random position, at which point the player will need to place an object in the line of sight of the LiDAR. The object must also be placed at a specific distance away from the LiDAR, and when this distance is achieved, the an LED on the discovery board will light up. Once this distance is reached, the user must hold the object at that position for 3 seconds, after which the LiDAR will move into its next position. There is a total of 3 different  positions that the user must complete with various distances to finish the puzzle. In addition to this, the user has a countdown timer of 10 seconds that only pauses when the player is in the correct position for that specific lock. If this countdown timer runs out, the game resets back to the first lock, and the player must try again.
 
 **Files Overview**
-- main.c
+- `main.c`
   - This file calls the movement function and HAL  initialisation functions, whilst also managing the LEDs that appear when the user places the object at the correct distance
-- last_period.c
+- `last_period.c`
   - This function reads the values from the PTU LiDAR unit, determining how long a beam of light takes to reflect back to the PTU
   - The code checks the state of GPIO pin GPIOA_PIN_8 using HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_8). It assumes that this pin is connected to the same light signal being captured by TIM1 channel 1.
   - If the pin is set to high (1), it means that the input signal has experienced a rising edge. In this case, the rise_time variable is updated with the value of IC_Val1. On the other hand, if the pin is not set to high (0), it means that the input signal has experienced a falling edge. In this case, the last_period variable is updated with the difference between IC_Val1 (current captured value) and rise_time (value captured during the previous rising edge).
-- movement.c
+- `movement.c`
   - This functions uses the speed of light calculations as well parameters regarding the desired yaw and pitch of the PTU to rotate the PTU to a specific location, in order to set new lock positions.
-- Lock.c
+- `Lock.c`
   - This function contains the code for the 3 different LiDAR positions and distances at which the object will need to be placed
   - It uses the last period calculations as well as a timer function to count how long the user has held up the object at the correct location, as well as how long the user has not held up the object at the correction, such that the countdown timer can be decremented.
 
@@ -52,14 +52,14 @@ In the puzzle, the player must pass 4 levels of increasing difficulty wherein th
 Failing to press the correspond button will result in the game restarting from the beginning. 
 At the completion of each level, the LED wheel will display certain LEDs of different colours which will be key to solving the next puzzle.
 **Files Overview**
-- main.c
+- `main.c`
   - This file contains code that allows for the calibration of the game. The calibration process involves the user pressing each button, with the corresponding LED on the
     board lighting up, allowing the user to see what button each light corresponds to.
   - A timer is also set to ensure the user does not take too long to press the button, and if the user does, the program will reset to the start
   - In addition, an LCD screen acts as the UI, providing simple instructions and showing the timer countdown
   - It also controls the activation and movement between the various levels of the game
  
-- level1 - level4.c
+- `level1 - level4.c`
   - Essentially controls the progression of each level of the game
   - Each level will follow the same method:
      - It will display one light at a time, and the user is required to press the corresponding button on the breadboard
@@ -67,7 +67,7 @@ At the completion of each level, the LED wheel will display certain LEDs of diff
      - The difficulty of each level increases by giving the user less time to press the buttons, and by increasing the number of buttons they need to press correctly to get 
        past the level
      - Once the final level is reached, the LCD announces that the game is finished, and by pressing the button on the breadboard, the user can cycle through all the              patterns, which is then used in the wiring puzzle
-- lcd.c
+- `lcd.c`
   - This file contains all functions necessary to operate the LCD screen, including but not limited to:
     - LCD_init : Initialises a 16 column by 2 row LCD screen without the curson
     - LCD_int  : Printing an int on the LCD
@@ -76,8 +76,10 @@ At the completion of each level, the LED wheel will display certain LEDs of diff
     - LCD_clear : Clears the LCD string
  
 
-### **Connect the wires**
+### **Power Communications**
+This puzzle involves using a previously obtained pattern of LEDs, realizing it represents a pattern of LED connections, and connecting the LEDs with the correct wires. Once the wires are connected correctly, *power is successfully supplied to the LCD display*. There are also 3 knobs (potentiometers) which must each be tuned to the sum of the $x$ and $y$ coordinate values in the magnetometer game. Each coloured wire has a known resistor soldered in its center. The two LEDs each wire must be connected between also have the same resistor, creating a 1:2 ratio voltage divider. The ADC1 channels 5, 6, 7 and 8 are used in regular scan conversion mode to measure the voltages at each LED. If all wires are in the correct position, then the measured voltage should be approximately equal to $\frac{2}{3}V_{REF}$. ADC1 channels 2,3 and 4 are used to measure the voltage at each of the potentiometers. A 10-bit resolution is used (i.e. the measured values are from 0 to 1023), so we can divide by 64 to discreteize the voltage measurements into 16 steps (for each char on the LCD)
 
+##### Files Overview for Power Communications
 
 
 ### **Combination Lock \ Magnetic Detector** 
