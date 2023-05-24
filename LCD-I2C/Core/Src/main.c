@@ -23,6 +23,9 @@
 /* USER CODE BEGIN Includes */
 #include "liquidcrystal_i2c.h"
 
+// Use I2C 2 for the lcd screen, you can set whichever pins you want
+// I've set the I2C_ADDRESS for our LCD screen
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
