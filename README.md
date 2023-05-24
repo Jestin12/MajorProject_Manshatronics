@@ -29,6 +29,20 @@ Zach – CAT Scan (main)
 
 
 ### LiDar lock
+This puzzle uses the PTUs LiDAR functions to create an interactive and futuristic puzzle. This puzzle involves the player "high fiving" the LiDAR, which starts the game, and sets the LiDAR lock puzzle into motion. The PTU will rotate into a random position, at which point the player will need to place an object in the line of sight of the LiDAR. The object must also be placed at a specific distance away from the LiDAR, and when this distance is achieved, the an LED on the discovery board will light up. Once this distance is reached, the user must hold the object at that position for 3 seconds, after which the LiDAR will move into its next position. There is a total of 3 different  positions that the user must complete with various distances to finish the puzzle. In addition to this, the user has a countdown timer of 10 seconds that only pauses when the player is in the correct position for that specific lock. If this countdown timer runs out, the game resets back to the first lock, and the player must try again.
+
+**Files Overview**
+- main.c
+  - This file calls the movement function and HAL  initialisation functions, whilst also managing the LEDs that appear when the user places the object at the correct distance
+- last_period.c
+  - This function reads the values from the PTU LiDAR unit, determining how long a beam of light takes to reflect back to the PTU
+  - The code checks the state of GPIO pin GPIOA_PIN_8 using HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_8). It assumes that this pin is connected to the same light signal being captured by TIM1 channel 1.
+  - If the pin is set to high (1), it means that the input signal has experienced a rising edge. In this case, the rise_time variable is updated with the value of IC_Val1. On the other hand, if the pin is not set to high (0), it means that the input signal has experienced a falling edge. In this case, the last_period variable is updated with the difference between IC_Val1 (current captured value) and rise_time (value captured during the previous rising edge).
+- movement.c
+  - This functions uses the speed of light calculations as well parameters regarding the desired yaw and pitch of the PTU to rotate the PTU to a specific location, in order to set new lock positions.
+- Lock.c
+  - This function contains the code for the 3 different LiDAR positions and distances at which the object will need to be placed
+  - It uses the last period calculations as well as a timer function to count how long the user has held up the object at the correct location, as well as how long the user has not held up the object at the correction, such that the countdown timer can be decremented.
 
 
 
@@ -62,7 +76,7 @@ At the completion of each level, the LED wheel will display certain LEDs of diff
     - LCD_clear : Clears the LCD string
  
 
-### Connect the wires
+### **Connect the wires**
 
 
 
@@ -81,11 +95,26 @@ The combination lock is a puzzle designed to act like an ordinary combination lo
   - The user will need to turn to a range of different values acquired throughout the rest of the game, which will be indicated by the numbers on the mold
   - A timer will also be implemented, giving the user a short time period to rotate the board to each value, and if this timeframe is exceeded, the challenge will restart
   
-However, due to limitations of the magnetometer sensor module itself, including noise and low sensitivity, this was not a viable idea, and so, the Magnetic Detector game   was created instead:
-This game involves a magnetic pad being placed underneath a piece of grid paper. The magnetic pad will have magnets dotted around the area, and by using the discovery       board as a sensor, the location of the magnets can be found. The grid location coordinates of the magnetic locations will be a code that once put together, allows the       RemotePuzzle game to be activated. To help the player find where the magnets are, 4 LEDs light up when the player is close, and all LEDs light up when the player has the   discovery board on top of the magnet itself.
+However, due to limitations of the magnetometer sensor module itself, including noise and low sensitivity, this was not a viable idea, and so, the Magnetic Detector game   was created instead;
+This game involves a magnetic pad being placed underneath a piece of grid paper. The magnetic pad will have magnets dotted around the area, and by using the discovery board as a sensor, the location of the magnets can be found. The grid location coordinates of the magnetic locations will be a code that once put together, allows the       RemotePuzzle game to be activated. To help the player find where the magnets are, 4 LEDs light up when the player is close, and all LEDs light up when the player has the   discovery board on top of the magnet itself.
+
 **Files Overview for Magnetic Detector**
   - main.c
     - main function: This function calls all the initialiser functions, and also converts the raw x,y and z magnetometer data into an angle describing the direction of the       strongest magnetic field, with it reaching 90 if it is directly below the the discovery board, and around 45 if it is at 45 degrees to the strongest magnetic field.
     - configuring_magnetometer: This functions configures the settings for the magnetometer, firstly by resetting it by sending a 0x00 to the CFG_REG_A_M register. Then,         the magnetometer is set to continuous measurement mode, by sending 0x01 value to the CFG_REG_C_M register.
     - read_magnetometer: This functions read the MSB and LSB of all the raw x,y and z magnetometer values, and then uses the MSB and LSB to convert to exact x,y and z             magnetic data.
     - detecting_magnets: This function uses the angle of maximum field strength to create various thresholds to display how close the player is to finding the magnets. If         the angle is above 40 degrees, 4 LEDs will light up, and if the angle is greater than 70, all the LEDs light up, as the player will be above the magnet, with a small       margin for error.
+
+## Remote Puzzle
+This puzzle acts as a bridge to progress between the magnetic detector puzzle and the connect wires puzzle. This involves the user inputting the code acquired during the magnetic detector puzzle into a wireless remote, which will lead to the activation of the connect wires puzzle. As the user inputs the coordinates into the remote, the program checks whether the coordinate inputed is one of the desired ones, and if so, the LEDs on the board flashes, and the user can input the next coordinates, with 3 coordinates necessary in total. If the player types in an incorrect code, the program does not reset to the beginning, but rather allows the user unlimited opportunities to keep typing codes until the goal is achieved.
+**Files Overview for Remote Puzzle**
+- main.c
+  - This file initialises the LCD in parallel with the connect wires code, such that once the player types in the correct code, the function of the LCD changes to the functionality necessary for connect wires, instead of having to manually detach the LCD and attach to the other discovery board  
+  - This code also initialises the wireless connection between the discovery board and the remote, by connecting the spare pins of the board to the remote's receiver
+- lcd.c
+  - This file contains all functions necessary to operate the LCD screen, including but not limited to:
+    - LCD_init : Initialises a 16 column by 2 row LCD screen without the curson
+    - LCD_int  : Printing an int on the LCD
+    - LCD_string : Printing a string on the LCD
+    - LCD_cursor : Creates the cursor to indicate where on the LCD data is to be written
+    - LCD_clear : Clears the LCD string
