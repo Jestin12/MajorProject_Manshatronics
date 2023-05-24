@@ -82,8 +82,7 @@ static void MX_I2C2_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint16_t samples[7];
-	char msg[100];
+
 
   /* USER CODE END 1 */
 
@@ -114,59 +113,35 @@ int main(void)
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
 
-  	  RCC->AHBENR |= RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOCEN | RCC_AHBENR_GPIOEEN;
+  // Enabling GPIO clocks
+  RCC->AHBENR |= RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOCEN | RCC_AHBENR_GPIOEEN;
 
-  	  HD44780_Init(2);
-//  	  HD44780_Clear();
-//  	  HD44780_SetCursor(0,0);
-//  	  HD44780_PrintStr("HELLO");
-//  	  HD44780_SetCursor(10,1);
-//  	  HD44780_PrintStr("WORLD");
-//  	  HAL_Delay(2000);
-//
-//  	  HD44780_Clear();
-//  	  HD44780_SetCursor(0,0);
-//  	  HD44780_PrintStr("HELLO");
-//  	  HAL_Delay(2000);
-//  	  HD44780_NoBacklight();
-//  	  HAL_Delay(2000);
-//  	  HD44780_Backlight();
-//
-//  	  HAL_Delay(2000);
-//  	  HD44780_Cursor();
-//  	  HAL_Delay(2000);
-//  	  HD44780_Blink();
-//  	  HAL_Delay(5000);
-//  	  HD44780_NoBlink();
-//  	  HAL_Delay(2000);
-//  	  HD44780_NoCursor();
-//  	  HAL_Delay(2000);
-//
-//  	  HD44780_NoDisplay();
-//  	  HAL_Delay(2000);
-//  	  HD44780_Display();
-//
-//  	  HD44780_Clear();
-//  	  HD44780_SetCursor(0,0);
-//  	  HD44780_PrintStr("Learning STM32 with LCD is fun :-)");
+  HD44780_Init(2);
+  HD44780_Backlight();
 
 //  Calibrating ADC
-//  ADC1->CR |= ADC_CR_ADCAL;
-//  while((ADC1->CR & ADC_CR_ADCAL) == ADC_CR_ADCAL); // Waiting for the calibration to finish
+  ADC1->CR |= ADC_CR_ADCAL;
+  while((ADC1->CR & ADC_CR_ADCAL) == ADC_CR_ADCAL); // Waiting for the calibration to finish
+
+// Set the GPIO pin low
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
 
 // LED output register
   uint16_t *led_output_registers = ((uint16_t *)&(GPIOE->MODER)) + 1;
   *led_output_registers = 0x5555;
 
+  // Defining global variables
+  uint16_t samples[7];
+  char msg[100];
   uint16_t upper_bound = 475;
   uint16_t lower_bound = 375;
-  uint8_t new_state = 0;
-  uint8_t current_state = 0;
-  uint16_t position1;
-  uint16_t position2;
-  uint16_t position3;
+  uint8_t new_power_state = 0;
+  uint8_t current_power_state = 0;
   uint8_t char_positions[16];
+  uint8_t cur_reveal_state = 0;
+  uint8_t next_reveal_state = 0;
 
+  // Creating special characters for the LCD
   uint8_t Filled[8] = {
 		  0b11111,
 		  0b11111,
@@ -257,6 +232,7 @@ int main(void)
   HD44780_CreateSpecialChar(6, Bottom);
   HD44780_CreateSpecialChar(7, Middle);
 
+  // Pattern setting function for LCD progress bar
   void set_char_positions(uint8_t p1, uint8_t p2, uint8_t p3) {
 	  for (int i = 0; i < 16; i++) {
 		  if ((p1 >= i) && (p2 >= i) && (p3 >= i)) {
@@ -285,51 +261,76 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  // Regular conversion scan:
+	  // DMA automatically stores each conversion into memory instead of
+	  // getting each of the 7 values one at a time from the data register
 	  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)samples, 7);
 
-	  // HAL_ADC_Stop_DMA(&hadc1);
-
-	  // Convert to string and print
+	  // DEBUGGING: Convert to string and print
 	  sprintf(msg, "C5: [%d] C6: [%d] C7: [%d] C8: [%d] C2: [%d] C3: [%d] C4: [%d]\r\n", samples[0], samples[1], samples[2], samples[3], samples[4], samples[5], samples[6]);
 	  HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
-//	  sprintf(msg, "C5: [%d] C6: [%d] C7: [%d] C8: [%d] C2: [%d] C3: [%d] C4: [%d] \r\n", samples_b[0], samples_b[1], samples_b[2]);
-//	  HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+	  // Get character positions for LCD bars
+	  uint8_t p1 = (samples[4]+1)/64;
+	  uint8_t p2 = (samples[5]+1)/64;
+	  uint8_t p3 = (samples[6]+1)/64;
+	  set_char_positions(p1, p2, p3);
 
-	  set_char_positions((samples[4]+1)/64, (samples[5]+1)/64, (samples[6]+1)/64);
-
-	  // position = (2*(samples[4]+1) - (samples[5]+1) + samples[6]+1) / (64 * 3);
-
-	  if ((lower_bound < samples[0]) && (samples[0] < upper_bound) && (lower_bound < samples[1]) && (samples[1] < upper_bound) && (lower_bound < samples[2]) && (samples[2] < upper_bound) && (lower_bound < samples[3]) && (samples[3] < upper_bound)) {
-		  // HAL_UART_Transmit(&huart1, (uint8_t*)comp_msg, strlen(comp_msg), HAL_MAX_DELAY);
-		  new_state = 1;
+	  if ((p1 == 6) && (p2 == 4) && (p3 == 9)) {
+		  next_reveal_state = 1;
 	  } else {
-		  new_state = 0;
+		  next_reveal_state = 0;
 	  }
 
-	  // Progress bar
-	  for (int i = 0; i < 16; i ++) {
-		  HD44780_SetCursor(i,1);
-		  HD44780_PrintSpecialChar(char_positions[i]);
+	  if ((cur_reveal_state == 0) && (next_reveal_state == 1)) {
+		  HD44780_Clear();
+		  HD44780_SetCursor(0,0);
+		  HD44780_PrintStr("PTU: High 5 me!");
+		  // Set the GPIO pin high
+		  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+		  cur_reveal_state = 1;
+	  } else if ((cur_reveal_state == 1) && (next_reveal_state == 0)) {
+		  // Set the GPIO pin low
+		  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
+		  cur_reveal_state = 0;
 	  }
 
-	  // Random text
+	  // Check if wires are correctly aligned
+	  if ((lower_bound < samples[0]) && (samples[0] < upper_bound) && (lower_bound < samples[1]) && (samples[1] < upper_bound) && (lower_bound < samples[2]) && (samples[2] < upper_bound) && (lower_bound < samples[3]) && (samples[3] < upper_bound)) {
+		  new_power_state = 1;
+	  } else {
+		  new_power_state = 0;
+	  }
+
+	  // Progress bar on 2nd row of LCD
+	  if (current_power_state == 1) {
+		 for (int i = 0; i < 16; i ++) {
+		 	  HD44780_SetCursor(i,1);
+		 	  HD44780_PrintSpecialChar(char_positions[i]);
+		 }
+	  } else {
+		  for (int i = 0; i < 16; i ++) {
+		  	HD44780_SetCursor(i,1);
+		  	HD44780_PrintSpecialChar(1);
+		  }
+	  }
 
 	  // Update LCD Screen
-	  if ((current_state == 0) && (new_state == 1)) {
+	  if ((current_power_state == 0) && (new_power_state == 1) && (cur_reveal_state == 0)) {
 		  HD44780_Clear();
 		  HD44780_SetCursor(0,0);
-		  HD44780_PrintStr("High five it!");
-		  current_state = 1;
-	  } else if ((current_state == 1) && (new_state == 0)) {
+		  HD44780_PrintStr("Power on!");
+		  current_power_state = 1;
+	  } else if ((current_power_state == 1) && (new_power_state == 0)) {
 		  HD44780_Clear();
 		  HD44780_SetCursor(0,0);
-		  HD44780_PrintStr("No power ...");
-		  current_state = 0;
+		  HD44780_PrintStr("Power off ...");
+		  current_power_state = 0;
 	  } else {
-		  current_state = new_state;
+		  current_power_state = new_power_state;
 	  }
 
+	  // Wait a little bit
 	  HAL_Delay(100);
     /* USER CODE END WHILE */
 
@@ -749,6 +750,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOE, CS_I2C_SPI_Pin|LD3_Pin|LD5_Pin|LD7_Pin
                           |LD9_Pin|LD10_Pin|LD8_Pin|LD6_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
+
   /*Configure GPIO pins : DRDY_Pin MEMS_INT3_Pin MEMS_INT4_Pin MEMS_INT1_Pin
                            MEMS_INT2_Pin */
   GPIO_InitStruct.Pin = DRDY_Pin|MEMS_INT3_Pin|MEMS_INT4_Pin|MEMS_INT1_Pin
@@ -771,6 +775,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PC8 */
+  GPIO_InitStruct.Pin = GPIO_PIN_8;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 }
 
