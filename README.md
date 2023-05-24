@@ -1,19 +1,22 @@
 # MTRX2700 Major Project - Manshatronics
 ## Overview
-
-## Modules
-Simon Says- 
-Module uses GPIO inputs, LEDs, and an LCD board
-In the puzzle, the player must pass 4 levels of increasing difficulty wherein they must match the LED lit up by the game with the corresponding LED a consecutively for x number of times without error.
-Failing to press the correspond button will result in the game restarting from the beginning. 
-At the completion of each level, the LED wheel will display certain LEDs of different colours which will be key to solving the next puzzle.
+The Manshatronics team has created a series of interesting and unique problems which require
+- Skill
+- Intelligence
+- Speed
+- Intelligence
+## Puzzle Progression
+1. Magnet Search
+2. Simon Says
+3. Power Communications
+4. Hi-five and LiDar lock
 
 ## Group Contributions
 Neel – High five (main), (assist) CAT-Scan and LiDar lock (back-up puzzle) 
 
 Jestin – Simon says (main), RemotePuzzle (main), (assist) servo movement function in high five 
 
-Josh - Connect the wires  
+Josh - Power Communications (main)
 
 Mansh – Magnetic Detector (main), RemotePuzzle (assist)  
 
@@ -78,11 +81,13 @@ At the completion of each level, the LED wheel will display certain LEDs of diff
     - LCD_clear : Clears the LCD string
  
 
-### **Power Communications**
-This puzzle involves using a previously obtained pattern of LEDs, realizing it represents a pattern of LED connections, and connecting the LEDs with the correct wires. Once the wires are connected correctly, *power is successfully supplied to the LCD display*. There are also 3 knobs (potentiometers) which must each be tuned to the sum of the $x$ and $y$ coordinate values in the magnetometer game. Each coloured wire has a known resistor soldered in its center. The two LEDs each wire must be connected between also have the same resistor, creating a 1:2 ratio voltage divider. The ADC1 channels 5, 6, 7 and 8 are used in regular scan conversion mode to measure the voltages at each LED. If all wires are in the correct position, then the measured voltage should be approximately equal to $\frac{2}{3}V_{REF}$. ADC1 channels 2,3 and 4 are used to measure the voltage at each of the potentiometers. A 10-bit resolution is used (i.e. the measured values are from 0 to 1023), so we can divide by 64 to discreteize the voltage measurements into 16 steps (for each char on the LCD)
+### **Power Communications** (`/power-comms/`)
+This puzzle involves using a previously obtained pattern of LEDs, realizing it represents a pattern of LED connections, and connecting the LEDs with the correct wires. Once the wires are connected correctly, *power is successfully supplied to the LCD display*. There are also 3 knobs (potentiometers) which must each be tuned to the sum of the $x$ and $y$ coordinate values in the magnetometer game. Each coloured wire has a known resistor soldered in its center. The two LEDs each wire must be connected between also have the same resistor, creating a 1:2 ratio voltage divider. The ADC1 channels 5, 6, 7 and 8 are used in regular scan conversion mode to measure the voltages at each LED. If all wires are in the correct position, then the measured voltage should be approximately equal to $\frac{2}{3}V_{REF}$. ADC1 channels 2,3 and 4 are used to measure the voltage at each of the potentiometers. A 10-bit resolution is used (i.e. the measured values are from 0 to 1023), so we can divide by 64 to discreteize the voltage measurements into 16 steps (for each char on the LCD). 
 
 ##### Files Overview for Power Communications
-
+- `main.c` contains all of the functionality for the puzzle
+  - The function `void set_char_positions()` generates the appropriate character layout to show the 3 voltage bars for each potentiometer on the LCD
+- `liquidcrystal_i2c.c` contains functions for using the LC display via I2C
 
 ### **Combination Lock \ Magnetic Detector** 
 The combination lock is a puzzle designed to act like an ordinary combination lock, but using the magnetometer of the discovery board instead of an actual physical mechanism. The combination lock would use the magnetometer to find the relative heading of the discovery board, from 0 to 360. In a typical combination lock, different numbers are placed at different angles, and so the discovery board could be placed in a mold so that it can only rotate in place, with the mold having numbers around the edge just as a typical combination lock would. Each number will correspond to a different angle, which can be implemented in the code. The player of the escape room would then need to discover the combination for the lock through the other puzzles, and then input those by spinning the discovery board in a specific way.
