@@ -40,7 +40,7 @@ void lock1(int *y)
 		{
 			targetCount = targetCount - (TIM3->ARR+1.5);
 		}
-	    sprintf(string_to_send,"%u,%u dick\r\n",TIM3->CNT,*y);
+	    sprintf(string_to_send,"%u,%u\r\n",TIM3->CNT,*y);
 		SerialOutputString(string_to_send, &USART1_PORT);
 
 		if(TIM3->CNT != targetCount)
@@ -116,7 +116,7 @@ void lock3(int *y)
 		{
 			targetCount = targetCount - (TIM3->ARR+1.5);
 		}
-		sprintf(string_to_send,"%u,%u,%u fuck\r\n",TIM3->CNT,*y,last_period);
+		sprintf(string_to_send,"%u,%u,%u\r\n",TIM3->CNT,*y,last_period);
 		SerialOutputString(string_to_send, &USART1_PORT);
 
 		if(TIM3->CNT+1 != targetCount)
